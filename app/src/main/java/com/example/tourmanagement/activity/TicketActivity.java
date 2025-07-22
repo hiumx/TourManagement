@@ -121,12 +121,11 @@ public class TicketActivity extends AppCompatActivity {
             android.util.Log.d("TicketActivity", "No intent extras found");
         }
 
-
-        // Fix: Use getIntExtra instead of getLongExtra since the ID is passed as Integer
-        int bookingId = getIntent().getIntExtra("booking_id", -1);
+        // Fix: Use getLongExtra instead of getIntExtra since the ID is passed as Long
+        long bookingId = getIntent().getLongExtra("booking_id", -1L);
         android.util.Log.d("TicketActivity", "Received booking ID: " + bookingId);
 
-        if (bookingId == -1) {
+        if (bookingId == -1L) {
             android.util.Log.e("TicketActivity", "Invalid booking ID received");
             showToast("Invalid booking ID");
             finish();
@@ -134,7 +133,8 @@ public class TicketActivity extends AppCompatActivity {
         }
 
         try {
-            currentBooking = database.bookingDao().getBookingById(bookingId);
+            // Convert long to int for database query (assuming your DAO expects int)
+            currentBooking = database.bookingDao().getBookingById((int) bookingId);
             android.util.Log.d("TicketActivity", "Loaded booking: " + (currentBooking != null ? currentBooking.getBookingReference() : "null"));
 
             if (currentBooking != null) {
