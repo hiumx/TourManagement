@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">TourManagement</string>
+
+    <!-- Search Tour Activity -->
+    <string name="no_tours_available">No tours available</string>
+    <string name="no_tours_found">No tours found for \'%1$s\'</string>
+</resources>
