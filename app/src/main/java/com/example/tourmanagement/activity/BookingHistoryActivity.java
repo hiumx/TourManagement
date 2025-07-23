@@ -67,11 +67,23 @@ public class BookingHistoryActivity extends AppCompatActivity implements Booking
         // Initialize database
         database = TourManagementDatabase.getDatabase(this);
 
-        // Get user ID from intent
+        // Get user ID from intent or SharedPreferences as fallback
         currentUserId = getIntent().getIntExtra("user_id", -1);
 
+        // If no user_id passed via intent, try to get it from SharedPreferences
         if (currentUserId == -1) {
-            showToast("Error loading booking history");
+            android.content.SharedPreferences sharedPreferences = getSharedPreferences("TourManagementPrefs", MODE_PRIVATE);
+            currentUserId = sharedPreferences.getInt("user_id", -1);
+
+            // Log for debugging
+            android.util.Log.d("BookingHistoryActivity", "No user_id in intent, retrieved from SharedPreferences: " + currentUserId);
+        } else {
+            android.util.Log.d("BookingHistoryActivity", "Received user_id from intent: " + currentUserId);
+        }
+
+        if (currentUserId == -1) {
+            android.util.Log.e("BookingHistoryActivity", "No valid user ID found");
+            showToast("Error: User session not found. Please login again.");
             finish();
             return;
         }

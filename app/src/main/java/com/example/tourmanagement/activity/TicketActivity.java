@@ -121,11 +121,11 @@ public class TicketActivity extends AppCompatActivity {
             android.util.Log.d("TicketActivity", "No intent extras found");
         }
 
-        // Fix: Use getLongExtra instead of getIntExtra since the ID is passed as Long
-        long bookingId = getIntent().getLongExtra("booking_id", -1L);
+        // Fix: Use getIntExtra instead of getLongExtra since booking.getId() returns int
+        int bookingId = getIntent().getIntExtra("booking_id", -1);
         android.util.Log.d("TicketActivity", "Received booking ID: " + bookingId);
 
-        if (bookingId == -1L) {
+        if (bookingId == -1) {
             android.util.Log.e("TicketActivity", "Invalid booking ID received");
             showToast("Invalid booking ID");
             finish();
@@ -133,8 +133,8 @@ public class TicketActivity extends AppCompatActivity {
         }
 
         try {
-            // Convert long to int for database query (assuming your DAO expects int)
-            currentBooking = database.bookingDao().getBookingById((int) bookingId);
+            // Load booking data from database
+            currentBooking = database.bookingDao().getBookingById(bookingId);
             android.util.Log.d("TicketActivity", "Loaded booking: " + (currentBooking != null ? currentBooking.getBookingReference() : "null"));
 
             if (currentBooking != null) {
@@ -145,7 +145,7 @@ public class TicketActivity extends AppCompatActivity {
                 android.util.Log.d("TicketActivity", "Loaded customer: " + (customer != null ? customer.getFullName() : "null"));
             }
         } catch (Exception e) {
-            android.util.Log.e("TicketActivity", "Error loading booking data: " + e.getMessage());
+            android.util.Log.e("TicketActivity", "Error loading booking data: " + e.getMessage(), e);
             showToast("Error loading ticket information: " + e.getMessage());
             finish();
             return false;

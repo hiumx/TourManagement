@@ -11,7 +11,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.card.MaterialCardView;
 import com.example.tourmanagement.R;
 import com.example.tourmanagement.adapter.TourAdapter;
 import com.example.tourmanagement.database.TourManagementDatabase;
@@ -21,35 +22,21 @@ import java.util.List;
 
 /**
  * Dashboard Activity serving as the main hub for the tour management system.
- *
- * Features:
- * - Display all available tours in a RecyclerView
- * - Quick access to tour booking and details
- * - User profile and booking history access
- * - Tour search and filtering capabilities
- * - Admin tour management (CRUD operations)
- * - User logout functionality
- * - Navigation to various app sections
- *
- * UI Components:
- * - Welcome message with user name
- * - RecyclerView for tour listings
- * - Floating Action Button for adding new tours (admin)
- * - Menu bar with logout and profile options
- * - Search functionality
- *
- * @author Tour Management Team
- * @version 1.0
- * @since 2025-07-22
+ * Enhanced with modern Material Design UI/UX components.
  */
 public class DashboardActivity extends AppCompatActivity implements TourAdapter.OnTourClickListener {
 
     /**
-     * UI components
+     * UI components - Enhanced with new modern elements
      */
     private TextView tvWelcome;
+    private TextView tvTotalTours;
+    private TextView tvUserBookings;
+    private TextView tvSearchHint;
+    private TextView tvViewAll;
     private RecyclerView recyclerViewTours;
-    private FloatingActionButton fabAddTour;
+    private ExtendedFloatingActionButton fabAddTour;
+    private MaterialCardView searchCard;
 
     /**
      * Adapter for tour listings
@@ -72,8 +59,6 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
     /**
      * Called when the activity is first created.
      * Initializes UI components, loads user data, and displays tours.
-     *
-     * @param savedInstanceState Bundle containing saved state
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,6 +83,9 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
 
         // Setup event listeners
         setupEventListeners();
+
+        // Load dashboard statistics
+        loadDashboardStats();
     }
 
     /**
@@ -140,22 +128,41 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
     }
 
     /**
-     * Initializes all UI components
+     * Initializes all UI components including new modern elements
      */
     private void initializeViews() {
+        // Existing components
         tvWelcome = findViewById(R.id.tv_welcome);
         recyclerViewTours = findViewById(R.id.recycler_view_tours);
         fabAddTour = findViewById(R.id.fab_add_tour);
 
-        // Set welcome message
+        // New modern UI components
+        tvTotalTours = findViewById(R.id.tv_total_tours);
+        tvUserBookings = findViewById(R.id.tv_user_bookings);
+        tvSearchHint = findViewById(R.id.tv_search_hint);
+        tvViewAll = findViewById(R.id.tv_view_all);
+        searchCard = findViewById(R.id.search_card);
+
+        // Set welcome message with enhanced styling
         if (currentUser != null) {
-            tvWelcome.setText("Welcome, " + currentUser.getFullName() + "!");
+            String welcomeMessage = isAdmin ?
+                "Welcome back, Administrator!" :
+                "Welcome, " + currentUser.getFullName() + "!";
+            tvWelcome.setText(welcomeMessage);
         }
 
-        // Setup toolbar
+        // Setup toolbar with enhanced styling
         setSupportActionBar(findViewById(R.id.toolbar));
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Tour Dashboard");
+            getSupportActionBar().setSubtitle(isAdmin ? "Admin Panel" : "Explore & Book Tours");
+        }
+
+        // Show/hide admin-only elements
+        if (isCurrentUserAdmin()) {
+            fabAddTour.setVisibility(View.VISIBLE);
+        } else {
+            fabAddTour.setVisibility(View.GONE);
         }
     }
 
@@ -185,22 +192,62 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
     }
 
     /**
-     * Sets up event listeners for UI components
+     * Enhanced event listeners for new UI components
      */
     private void setupEventListeners() {
-        // FAB click listener - only for admin users
+        // Enhanced FAB click listener
         fabAddTour.setOnClickListener(v -> {
             if (isCurrentUserAdmin()) {
-                // Navigate to add tour activity
-                Intent intent = new Intent(DashboardActivity.this, AddTourActivity.class);
+                Intent intent = new Intent(DashboardActivity.this, AddEditTourActivity.class);
                 startActivity(intent);
             } else {
-                Toast.makeText(this, "Only admin users can add tours", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Add tour feature (Admin only)", Toast.LENGTH_SHORT).show();
             }
         });
 
-        // Check admin status and configure UI
-        checkAdminStatusAndConfigureUI();
+        // Search card click listener
+        tvSearchHint.setOnClickListener(v -> {
+            Intent intent = new Intent(DashboardActivity.this, SearchToursActivity.class);
+            startActivity(intent);
+        });
+
+        // View all tours click listener
+        tvViewAll.setOnClickListener(v -> {
+            Intent intent = new Intent(DashboardActivity.this, SearchToursActivity.class);
+            intent.putExtra("show_all", true);
+            startActivity(intent);
+        });
+
+        // Filter icon click listener (placeholder for future filter functionality)
+        findViewById(R.id.iv_filter).setOnClickListener(v -> {
+            // TODO: Implement filter functionality
+            Toast.makeText(this, "Filter coming soon!", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    /**
+     * Loads dashboard statistics for the stats cards
+     */
+    private void loadDashboardStats() {
+        try {
+            // Load total tours count
+            List<Tour> allTours = database.tourDao().getActiveTours();
+            tvTotalTours.setText(String.valueOf(allTours.size()));
+
+            // Load user bookings count
+            if (currentUser != null && !isAdmin) {
+                int bookingsCount = database.bookingDao().getUserBookingsCount(currentUser.getId());
+                tvUserBookings.setText(String.valueOf(bookingsCount));
+            } else {
+                // For admin, show total bookings in system
+                int totalBookings = database.bookingDao().getTotalBookingsCount();
+                tvUserBookings.setText(String.valueOf(totalBookings));
+            }
+        } catch (Exception e) {
+            // Handle error gracefully
+            tvTotalTours.setText("0");
+            tvUserBookings.setText("0");
+        }
     }
 
     /**
@@ -216,25 +263,36 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
     }
 
     /**
-     * Handles menu item selections
-     *
-     * @param item Selected menu item
-     * @return true if item handled successfully
+     * Enhanced menu item selection with new menu items
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_profile) {
-            navigateToProfile();
+        if (id == R.id.action_search) {
+            // Search action - navigate to search activity
+            Intent intent = new Intent(this, SearchToursActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_profile) {
+            // Profile action
+            Intent intent = new Intent(this, ProfileActivity.class);
+            startActivity(intent);
             return true;
         } else if (id == R.id.action_booking_history) {
-            navigateToBookingHistory();
+            // Booking history action - pass current user ID
+            Intent intent = new Intent(this, BookingHistoryActivity.class);
+            if (currentUser != null) {
+                intent.putExtra("user_id", currentUser.getId());
+            }
+            startActivity(intent);
             return true;
-        } else if (id == R.id.action_search) {
-            navigateToSearch();
+        } else if (id == R.id.action_settings) {
+            // Settings action (placeholder for future implementation)
+            Toast.makeText(this, "Settings coming soon!", Toast.LENGTH_SHORT).show();
             return true;
         } else if (id == R.id.action_logout) {
+            // Logout action
             logout();
             return true;
         }
@@ -333,32 +391,6 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
     }
 
     /**
-     * Navigates to user profile activity
-     */
-    private void navigateToProfile() {
-        Intent intent = new Intent(this, ProfileActivity.class);
-        intent.putExtra("user_id", currentUser.getId());
-        startActivity(intent);
-    }
-
-    /**
-     * Navigates to booking history activity
-     */
-    private void navigateToBookingHistory() {
-        Intent intent = new Intent(this, BookingHistoryActivity.class);
-        intent.putExtra("user_id", currentUser.getId());
-        startActivity(intent);
-    }
-
-    /**
-     * Navigates to tour search activity
-     */
-    private void navigateToSearch() {
-        Intent intent = new Intent(this, SearchToursActivity.class);
-        startActivity(intent);
-    }
-
-    /**
      * Performs user logout
      * Clears session data and redirects to login
      */
@@ -387,7 +419,8 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
     @Override
     protected void onResume() {
         super.onResume();
-        loadTours(); // Refresh tours when returning to dashboard
+        loadTours();
+        loadDashboardStats();
     }
 
     /**
@@ -404,16 +437,6 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
         return isAdmin || (currentUser != null && currentUser.getId() == ADMIN_USER_ID);
     }
 
-    /**
-     * Check admin status and configure UI accordingly
-     */
-    private void checkAdminStatusAndConfigureUI() {
-        if (isCurrentUserAdmin()) {
-            fabAddTour.setVisibility(View.VISIBLE);
-        } else {
-            fabAddTour.setVisibility(View.GONE);
-        }
-    }
 
     /**
      * Shows a toast message to the user

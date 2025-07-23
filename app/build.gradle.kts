@@ -33,6 +33,13 @@ android {
     buildFeatures {
         viewBinding = true
     }
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "/META-INF/NOTICE.md"
+            excludes += "/META-INF/LICENSE.md"
+        }
+    }
 }
 
 dependencies {
@@ -60,6 +67,10 @@ dependencies {
     // Fragment navigation
     implementation("androidx.navigation:navigation-fragment:2.7.6")
     implementation("androidx.navigation:navigation-ui:2.7.6")
+
+    // JavaMail API for email functionality (forgot password feature)
+    implementation("com.sun.mail:android-mail:1.6.7")
+    implementation("com.sun.mail:android-activation:1.6.7")
 
     // Test dependencies
     testImplementation(libs.junit)

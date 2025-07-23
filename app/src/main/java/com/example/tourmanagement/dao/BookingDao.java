@@ -150,7 +150,7 @@ public interface BookingDao {
      * @param qrCode QR code string
      */
     @Query("UPDATE bookings SET qrCode = :qrCode WHERE id = :bookingId")
-    void updateQrCode(int bookingId, String qrCode);
+    void setBookingQrCode(int bookingId, String qrCode);
 
     /**
      * Gets confirmed bookings for a specific user
@@ -192,12 +192,49 @@ public interface BookingDao {
     List<Booking> getPendingPaymentBookings();
 
     /**
-     * Counts total bookings for a user
-     * Used for user statistics
+     * Gets count of bookings for a specific user
+     * Used for dashboard statistics
      *
-     * @param userId User ID
-     * @return Total number of bookings for the user
+     * @param userId User ID to count bookings for
+     * @return Number of bookings for the user
      */
     @Query("SELECT COUNT(*) FROM bookings WHERE userId = :userId")
-    int getUserBookingCount(int userId);
+    int getUserBookingsCount(int userId);
+
+    /**
+     * Gets total count of all bookings in the system
+     * Used for admin dashboard statistics
+     *
+     * @return Total number of bookings
+     */
+    @Query("SELECT COUNT(*) FROM bookings")
+    int getTotalBookingsCount();
+
+    /**
+     * Gets count of active bookings for a user (excluding cancelled)
+     * Used for user dashboard statistics
+     *
+     * @param userId User ID to count active bookings for
+     * @return Number of active bookings for the user
+     */
+    @Query("SELECT COUNT(*) FROM bookings WHERE userId = :userId AND bookingStatus != 'CANCELLED'")
+    int getUserActiveBookingsCount(int userId);
+
+    /**
+     * Gets count of pending bookings (awaiting payment)
+     * Used for admin dashboard
+     *
+     * @return Number of pending bookings
+     */
+    @Query("SELECT COUNT(*) FROM bookings WHERE paymentStatus = 'PENDING'")
+    int getPendingBookingsCount();
+
+    /**
+     * Gets count of completed bookings
+     * Used for admin dashboard
+     *
+     * @return Number of completed bookings
+     */
+    @Query("SELECT COUNT(*) FROM bookings WHERE bookingStatus = 'CONFIRMED' AND paymentStatus = 'PAID'")
+    int getCompletedBookingsCount();
 }

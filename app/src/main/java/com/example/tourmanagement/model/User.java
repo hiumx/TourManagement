@@ -75,6 +75,18 @@ public class User {
     private boolean isAdmin;
 
     /**
+     * Indicates if user must change password on next login
+     * Used for forgot password functionality
+     */
+    private boolean mustChangePassword = false;
+
+    /**
+     * Timestamp when password was last reset (in milliseconds)
+     * Used to track password reset requests
+     */
+    private long passwordResetAt = 0;
+
+    /**
      * Default constructor
      * Automatically sets creation timestamp to current time
      */
@@ -223,4 +235,28 @@ public class User {
      * @param admin true to grant admin privileges, false to revoke
      */
     public void setAdmin(boolean admin) { isAdmin = admin; }
+
+    /**
+     * Checks if the user must change password on next login
+     * @return true if password change is required, false otherwise
+     */
+    public boolean isMustChangePassword() { return mustChangePassword; }
+
+    /**
+     * Sets the user's password change requirement
+     * @param mustChangePassword true to require password change, false otherwise
+     */
+    public void setMustChangePassword(boolean mustChangePassword) { this.mustChangePassword = mustChangePassword; }
+
+    /**
+     * Gets the timestamp when the password was last reset
+     * @return Password reset timestamp in milliseconds
+     */
+    public long getPasswordResetAt() { return passwordResetAt; }
+
+    /**
+     * Sets the timestamp when the password was last reset
+     * @param passwordResetAt Password reset timestamp in milliseconds
+     */
+    public void setPasswordResetAt(long passwordResetAt) { this.passwordResetAt = passwordResetAt; }
 }

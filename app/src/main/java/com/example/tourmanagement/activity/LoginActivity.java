@@ -165,8 +165,15 @@ public class LoginActivity extends AppCompatActivity {
             if (user != null) {
                 // Login successful
                 saveUserSession(user.getId());
-                showToast("Login successful! Welcome " + user.getFullName());
-                navigateToDashboard();
+
+                // Check if user must change password (for reset functionality)
+                if (user.isMustChangePassword()) {
+                    showToast("Login successful! You must change your password for security.");
+                    navigateToChangePassword();
+                } else {
+                    showToast("Login successful! Welcome " + user.getFullName());
+                    navigateToDashboard();
+                }
             } else {
                 // Login failed
                 showToast("Invalid username or password");
@@ -259,12 +266,21 @@ public class LoginActivity extends AppCompatActivity {
 
     /**
      * Handles forgot password functionality
-     * Shows a simple dialog or navigates to password reset
+     * Navigates to the ForgotPasswordActivity
      */
     private void handleForgotPassword() {
-        // For now, show a simple message
-        // In a real app, this would navigate to password reset flow
-        showToast("Please contact support for password reset");
+        Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+        startActivity(intent);
+    }
+
+    /**
+     * Navigates to the ChangePasswordActivity for mandatory password change
+     */
+    private void navigateToChangePassword() {
+        Intent intent = new Intent(LoginActivity.this, ChangePasswordActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finish();
     }
 
     /**

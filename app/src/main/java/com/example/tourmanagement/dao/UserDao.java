@@ -17,6 +17,7 @@ import java.util.List;
  * - User registration and profile management
  * - User information retrieval and updates
  * - User deletion and account management
+ * - Password reset functionality
  *
  * @author Tour Management Team
  * @version 1.0
@@ -54,58 +55,61 @@ public interface UserDao {
     void deleteUser(User user);
 
     /**
-     * Retrieves all users from the database
-     * Used for admin user management
-     *
-     * @return List of all users
-     */
-    @Query("SELECT * FROM users")
-    List<User> getAllUsers();
-
-    /**
-     * Finds a user by their unique ID
-     * Used for user profile retrieval
-     *
-     * @param id User ID to search for
-     * @return User object if found, null otherwise
-     */
-    @Query("SELECT * FROM users WHERE id = :id")
-    User getUserById(int id);
-
-    /**
      * Authenticates user with username and password
      * Used for login functionality
      *
      * @param username User's username
      * @param password User's password
-     * @return User object if credentials are valid, null otherwise
+     * @return User object if authentication successful, null otherwise
      */
-    @Query("SELECT * FROM users WHERE username = :username AND password = :password")
+    @Query("SELECT * FROM users WHERE username = :username AND password = :password LIMIT 1")
     User authenticateUser(String username, String password);
 
     /**
-     * Checks if a username already exists in the database
-     * Used during registration to ensure unique usernames
+     * Finds a user by username
+     * Used for registration validation and user lookup
      *
-     * @param username Username to check
-     * @return User object if username exists, null otherwise
+     * @param username Username to search for
+     * @return User object if found, null otherwise
      */
-    @Query("SELECT * FROM users WHERE username = :username")
+    @Query("SELECT * FROM users WHERE username = :username LIMIT 1")
     User getUserByUsername(String username);
 
     /**
-     * Checks if an email already exists in the database
-     * Used during registration to ensure unique emails
+     * Finds a user by email address
+     * Used for forgot password functionality and email validation
      *
-     * @param email Email to check
-     * @return User object if email exists, null otherwise
+     * @param email Email address to search for
+     * @return User object if found, null otherwise
      */
-    @Query("SELECT * FROM users WHERE email = :email")
+    @Query("SELECT * FROM users WHERE email = :email LIMIT 1")
     User getUserByEmail(String email);
 
     /**
-     * Updates user's password
-     * Used for password reset functionality
+     * Finds a user by ID
+     * Used for profile retrieval and user management
+     *
+     * @param id User ID to search for
+     * @return User object if found, null otherwise
+     */
+    @Query("SELECT * FROM users WHERE id = :id LIMIT 1")
+    User getUserById(int id);
+
+    /**
+     * Updates user password
+     * Used for password change and reset functionality
+     *
+     * @param userId User ID
+     * @param newPassword New password
+     * @param mustChangePassword Whether user must change password on next login
+     * @param resetTimestamp Timestamp of password reset
+     */
+    @Query("UPDATE users SET password = :newPassword, mustChangePassword = :mustChangePassword, passwordResetAt = :resetTimestamp WHERE id = :userId")
+    void updateUserPassword(int userId, String newPassword, boolean mustChangePassword, long resetTimestamp);
+
+    /**
+     * Simple password update method
+     * Used for basic password changes without additional flags
      *
      * @param userId User ID
      * @param newPassword New password
@@ -114,23 +118,40 @@ public interface UserDao {
     void updatePassword(int userId, String newPassword);
 
     /**
-     * Gets users created within a specific time range
-     * Used for admin analytics and reporting
+     * Clears the password change requirement
+     * Used after user successfully changes their password
      *
-     * @param startTime Start timestamp
-     * @param endTime End timestamp
-     * @return List of users created in the time range
+     * @param userId User ID
      */
-    @Query("SELECT * FROM users WHERE createdAt BETWEEN :startTime AND :endTime")
-    List<User> getUsersByDateRange(long startTime, long endTime);
+    @Query("UPDATE users SET mustChangePassword = 0 WHERE id = :userId")
+    void clearPasswordChangeRequirement(int userId);
 
     /**
-     * Searches users by full name (case insensitive)
-     * Used for user search functionality
+     * Gets all users (for admin functionality)
+     * Used for user management by administrators
      *
-     * @param name Name to search for
-     * @return List of users matching the name
+     * @return List of all users
      */
-    @Query("SELECT * FROM users WHERE fullName LIKE '%' || :name || '%'")
-    List<User> searchUsersByName(String name);
+    @Query("SELECT * FROM users ORDER BY createdAt DESC")
+    List<User> getAllUsers();
+
+    /**
+     * Checks if username already exists
+     * Used for registration validation
+     *
+     * @param username Username to check
+     * @return Count of users with this username (should be 0 or 1)
+     */
+    @Query("SELECT COUNT(*) FROM users WHERE username = :username")
+    int isUsernameExists(String username);
+
+    /**
+     * Checks if email already exists
+     * Used for registration validation
+     *
+     * @param email Email to check
+     * @return Count of users with this email (should be 0 or 1)
+     */
+    @Query("SELECT COUNT(*) FROM users WHERE email = :email")
+    int isEmailExists(String email);
 }

@@ -48,15 +48,38 @@
             android:exported="false"
             android:parentActivityName=".activity.DashboardActivity" />
 
-        <!-- Add Tour Activity (Admin only) -->
+        <!-- Forgot Password Activity -->
         <activity
-            android:name=".activity.AddTourActivity"
+            android:name=".activity.ForgotPasswordActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.LoginActivity" />
+
+        <!-- Change Password Activity -->
+        <activity
+            android:name=".activity.ChangePasswordActivity"
+            android:exported="false" />
+
+        <!-- Profile Activity -->
+        <activity
+            android:name=".activity.ProfileActivity"
             android:exported="false"
             android:parentActivityName=".activity.DashboardActivity" />
 
-        <!-- Ticket Activity -->
+        <!-- Add/Edit Tour Activity (Admin only) -->
         <activity
-            android:name=".activity.TicketActivity"
+            android:name=".activity.AddEditTourActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Tour Details Activity -->
+        <activity
+            android:name=".activity.TourDetailsActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Search Tours Activity -->
+        <activity
+            android:name=".activity.SearchToursActivity"
             android:exported="false"
             android:parentActivityName=".activity.DashboardActivity" />
 
@@ -66,29 +89,11 @@
             android:exported="false"
             android:parentActivityName=".activity.DashboardActivity" />
 
-        <!-- Tour Details Activity (to be created) -->
+        <!-- Ticket Activity -->
         <activity
-            android:name=".activity.TourDetailsActivity"
+            android:name=".activity.TicketActivity"
             android:exported="false"
-            android:parentActivityName=".activity.DashboardActivity" />
-
-        <!-- Add/Edit Tour Activity (to be created) -->
-        <activity
-            android:name=".activity.AddEditTourActivity"
-            android:exported="false"
-            android:parentActivityName=".activity.DashboardActivity" />
-
-        <!-- Profile Activity (to be created) -->
-        <activity
-            android:name=".activity.ProfileActivity"
-            android:exported="false"
-            android:parentActivityName=".activity.DashboardActivity" />
-
-        <!-- Search Tours Activity (to be created) -->
-        <activity
-            android:name=".activity.SearchToursActivity"
-            android:exported="false"
-            android:parentActivityName=".activity.DashboardActivity" />
+            android:parentActivityName=".activity.BookingHistoryActivity" />
 
     </application>
 
