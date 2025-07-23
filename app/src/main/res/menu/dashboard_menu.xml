@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Search icon with improved styling - always show -->
+    <!-- Search icon - always show -->
     <item
         android:id="@+id/action_search"
         android:title="Search Tours"
@@ -10,47 +10,12 @@
         app:showAsAction="always"
         app:iconTint="@android:color/white" />
 
-    <!-- Spacer for better visual separation -->
+    <!-- Modern hamburger menu icon - replaces 3-dot menu -->
     <item
-        android:id="@+id/spacer"
-        android:title=""
-        app:showAsAction="never" />
-
-    <!-- Profile with updated icon -->
-    <item
-        android:id="@+id/action_profile"
-        android:title="My Profile"
-        android:icon="@drawable/ic_user_profile"
-        app:showAsAction="never"
-        app:iconTint="@color/primary_color" />
-
-    <!-- Booking History with updated icon -->
-    <item
-        android:id="@+id/action_booking_history"
-        android:title="Booking History"
-        android:icon="@drawable/ic_booking_history"
-        app:showAsAction="never"
-        app:iconTint="@color/accent_color" />
-
-    <!-- Divider group for better organization -->
-    <group android:id="@+id/group_account">
-
-        <!-- Settings option for better UX -->
-        <item
-            android:id="@+id/action_settings"
-            android:title="Settings"
-            android:icon="@drawable/ic_settings"
-            app:showAsAction="never"
-            app:iconTint="@color/text_secondary" />
-
-        <!-- Logout with warning color -->
-        <item
-            android:id="@+id/action_logout"
-            android:title="Logout"
-            android:icon="@drawable/ic_logout"
-            app:showAsAction="never"
-            app:iconTint="@color/error_color" />
-
-    </group>
+        android:id="@+id/action_menu"
+        android:title="Menu"
+        android:icon="@drawable/ic_menu_hamburger"
+        app:showAsAction="always"
+        app:iconTint="@android:color/white" />
 
 </menu>

@@ -4,4 +4,12 @@
     <!-- Search Tour Activity -->
     <string name="no_tours_available">No tours available</string>
     <string name="no_tours_found">No tours found for \'%1$s\'</string>
+
+    <!-- Settings Activity -->
+    <string name="version_format">Version %1$s</string>
+    <string name="default_version">Version 1.0</string>
+    <string name="dark_theme_enabled">Dark theme enabled</string>
+    <string name="light_theme_enabled">Light theme enabled</string>
+    <string name="dark_theme_active">Dark theme is currently active</string>
+    <string name="light_theme_active">Light theme is currently active</string>
 </resources>

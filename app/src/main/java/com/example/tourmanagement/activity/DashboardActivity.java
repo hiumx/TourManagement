@@ -18,6 +18,7 @@ import com.example.tourmanagement.adapter.TourAdapter;
 import com.example.tourmanagement.database.TourManagementDatabase;
 import com.example.tourmanagement.model.Tour;
 import com.example.tourmanagement.model.User;
+import com.example.tourmanagement.utils.SlidingPopupMenu;
 import java.util.List;
 
 /**
@@ -57,6 +58,11 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
     private static final int ADMIN_USER_ID = -999;
 
     /**
+     * Custom sliding popup menu
+     */
+    private SlidingPopupMenu slidingPopupMenu;
+
+    /**
      * Called when the activity is first created.
      * Initializes UI components, loads user data, and displays tours.
      */
@@ -86,6 +92,9 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
 
         // Load dashboard statistics
         loadDashboardStats();
+
+        // Initialize custom sliding popup menu
+        initializeSlidingMenu();
     }
 
     /**
@@ -251,6 +260,45 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
     }
 
     /**
+     * Initializes the custom sliding popup menu
+     */
+    private void initializeSlidingMenu() {
+        slidingPopupMenu = new SlidingPopupMenu(this, new SlidingPopupMenu.OnMenuItemClickListener() {
+            @Override
+            public void onProfileClick() {
+                Intent intent = new Intent(DashboardActivity.this, ProfileActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onBookingHistoryClick() {
+                Intent intent = new Intent(DashboardActivity.this, BookingHistoryActivity.class);
+                if (currentUser != null) {
+                    intent.putExtra("user_id", currentUser.getId());
+                }
+                startActivity(intent);
+            }
+
+            @Override
+            public void onSettingsClick() {
+                Intent intent = new Intent(DashboardActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onLogoutClick() {
+                // Show confirmation dialog for logout
+                new androidx.appcompat.app.AlertDialog.Builder(DashboardActivity.this)
+                    .setTitle("Logout")
+                    .setMessage("Are you sure you want to logout?")
+                    .setPositiveButton("Yes", (dialog, which) -> logout())
+                    .setNegativeButton("Cancel", null)
+                    .show();
+            }
+        });
+    }
+
+    /**
      * Creates options menu in the action bar
      *
      * @param menu Menu to inflate
@@ -263,7 +311,7 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
     }
 
     /**
-     * Enhanced menu item selection with new menu items
+     * Enhanced menu item selection - fixed to prevent multiple dropdowns
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -274,31 +322,23 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
             Intent intent = new Intent(this, SearchToursActivity.class);
             startActivity(intent);
             return true;
-        } else if (id == R.id.action_profile) {
-            // Profile action
-            Intent intent = new Intent(this, ProfileActivity.class);
-            startActivity(intent);
-            return true;
-        } else if (id == R.id.action_booking_history) {
-            // Booking history action - pass current user ID
-            Intent intent = new Intent(this, BookingHistoryActivity.class);
-            if (currentUser != null) {
-                intent.putExtra("user_id", currentUser.getId());
+        } else if (id == R.id.action_menu) {
+            // Show the beautiful sliding popup menu only once
+            if (slidingPopupMenu != null && !slidingPopupMenu.isShowing()) {
+                View toolbarView = findViewById(R.id.toolbar);
+                if (toolbarView != null) {
+                    slidingPopupMenu.show(toolbarView);
+                }
             }
-            startActivity(intent);
             return true;
-        } else if (id == R.id.action_settings) {
-            // Settings action (placeholder for future implementation)
-            Toast.makeText(this, "Settings coming soon!", Toast.LENGTH_SHORT).show();
-            return true;
-        } else if (id == R.id.action_logout) {
-            // Logout action
-            logout();
+        } else if (id == android.R.id.home) {
+            // Handle up navigation
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
 
     /**
      * Handles tour item clicks from RecyclerView
