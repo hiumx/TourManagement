@@ -21,6 +21,8 @@ public class SlidingPopupMenu {
         void onProfileClick();
         void onBookingHistoryClick();
         void onSettingsClick();
+        void onUserManagementClick(); // New admin feature
+        void onRevenueManagementClick(); // New admin feature
         void onLogoutClick();
     }
 
@@ -61,6 +63,8 @@ public class SlidingPopupMenu {
         LinearLayout menuProfile = popupView.findViewById(R.id.menu_profile);
         LinearLayout menuBookingHistory = popupView.findViewById(R.id.menu_booking_history);
         LinearLayout menuSettings = popupView.findViewById(R.id.menu_settings);
+        LinearLayout menuUserManagement = popupView.findViewById(R.id.menu_user_management); // New admin menu
+        LinearLayout menuRevenueManagement = popupView.findViewById(R.id.menu_revenue_management); // New admin menu
         LinearLayout menuLogout = popupView.findViewById(R.id.menu_logout);
 
         menuProfile.setOnClickListener(v -> {
@@ -76,6 +80,16 @@ public class SlidingPopupMenu {
         menuSettings.setOnClickListener(v -> {
             dismissWithDelay();
             if (listener != null) listener.onSettingsClick();
+        });
+
+        menuUserManagement.setOnClickListener(v -> {
+            dismissWithDelay();
+            if (listener != null) listener.onUserManagementClick();
+        });
+
+        menuRevenueManagement.setOnClickListener(v -> {
+            dismissWithDelay();
+            if (listener != null) listener.onRevenueManagementClick();
         });
 
         menuLogout.setOnClickListener(v -> {
@@ -126,5 +140,18 @@ public class SlidingPopupMenu {
 
     public boolean isShowing() {
         return popupWindow != null && popupWindow.isShowing();
+    }
+
+    /**
+     * Show or hide admin menu items based on user admin status
+     * @param isAdmin true if the user is an admin, false otherwise
+     */
+    public void setAdminMenuVisibility(boolean isAdmin) {
+        LinearLayout menuUserManagement = popupView.findViewById(R.id.menu_user_management);
+        LinearLayout menuRevenueManagement = popupView.findViewById(R.id.menu_revenue_management);
+
+        int visibility = isAdmin ? View.VISIBLE : View.GONE;
+        menuUserManagement.setVisibility(visibility);
+        menuRevenueManagement.setVisibility(visibility);
     }
 }

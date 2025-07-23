@@ -96,6 +96,30 @@
             android:exported="false"
             android:parentActivityName=".activity.BookingHistoryActivity" />
 
+        <!-- User Management Activity (Admin only) -->
+        <activity
+            android:name=".activity.UserManagementActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Revenue Management Activity (Admin only) -->
+        <activity
+            android:name=".activity.RevenueManagementActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Add Edit User Activity (Admin only) -->
+        <activity
+            android:name=".activity.AddEditUserActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.UserManagementActivity" />
+
+        <!-- User Details Activity (Admin only) -->
+        <activity
+            android:name=".activity.UserDetailsActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.UserManagementActivity" />
+
         <!-- Settings Activity -->
         <activity
             android:name=".activity.SettingsActivity"

@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -84,6 +85,12 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.TourViewHolder
          * @param tour The tour to book
          */
         void onBookTourClick(Tour tour);
+
+        /**
+         * Called when edit tour button is clicked (admin only)
+         * @param tour The tour to edit
+         */
+        void onEditTourClick(Tour tour);
 
         /**
          * Called when delete tour button is clicked (admin only)
@@ -173,7 +180,8 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.TourViewHolder
         private ImageView ivTourImage;
         private TextView tvTourName, tvTourLocation, tvTourPrice, tvTourDate;
         private TextView tvAvailableSlots, tvDuration;
-        private Button btnBookTour, btnDeleteTour;
+        private Button btnBookTour, btnEditTour, btnDeleteTour;
+        private LinearLayout adminButtonsContainer;
 
         /**
          * Constructor for TourViewHolder
@@ -192,7 +200,9 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.TourViewHolder
             tvAvailableSlots = itemView.findViewById(R.id.tv_available_slots);
             tvDuration = itemView.findViewById(R.id.tv_duration);
             btnBookTour = itemView.findViewById(R.id.btn_book_tour);
+            btnEditTour = itemView.findViewById(R.id.btn_edit_tour);
             btnDeleteTour = itemView.findViewById(R.id.btn_delete_tour);
+            adminButtonsContainer = itemView.findViewById(R.id.admin_buttons_container);
 
             // Set up click listeners
             itemView.setOnClickListener(new View.OnClickListener() {
@@ -211,6 +221,16 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.TourViewHolder
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION && listener != null) {
                         listener.onBookTourClick(tours.get(position));
+                    }
+                }
+            });
+
+            btnEditTour.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION && listener != null) {
+                        listener.onEditTourClick(tours.get(position));
                     }
                 }
             });
@@ -290,11 +310,11 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.TourViewHolder
                 tvAvailableSlots.setTextColor(context.getResources().getColor(R.color.error_color));
             }
 
-            // Show or hide delete button based on admin status
+            // Show or hide admin buttons based on admin status
             if (isAdmin) {
-                btnDeleteTour.setVisibility(View.VISIBLE);
+                adminButtonsContainer.setVisibility(View.VISIBLE);
             } else {
-                btnDeleteTour.setVisibility(View.GONE);
+                adminButtonsContainer.setVisibility(View.GONE);
             }
         }
     }

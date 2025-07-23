@@ -237,4 +237,43 @@ public interface BookingDao {
      */
     @Query("SELECT COUNT(*) FROM bookings WHERE bookingStatus = 'CONFIRMED' AND paymentStatus = 'PAID'")
     int getCompletedBookingsCount();
+
+    /**
+     * Gets all confirmed bookings for revenue calculations
+     *
+     * @return List of confirmed bookings
+     */
+    @Query("SELECT * FROM bookings WHERE bookingStatus = 'CONFIRMED' ORDER BY bookingDate DESC")
+    List<Booking> getConfirmedBookings();
+
+    /**
+     * Gets total revenue from all confirmed bookings
+     *
+     * @return Total revenue amount
+     */
+    @Query("SELECT SUM(totalAmount) FROM bookings WHERE bookingStatus = 'CONFIRMED'")
+    double getTotalConfirmedRevenue();
+
+    /**
+     * Gets monthly revenue for current month
+     *
+     * @param monthStart Start timestamp of the month
+     * @return Revenue for the month
+     */
+    @Query("SELECT SUM(totalAmount) FROM bookings WHERE bookingStatus = 'CONFIRMED' AND bookingDate >= :monthStart")
+    double getMonthlyRevenue(long monthStart);
+
+    /**
+     * Gets revenue data for the last 12 months for chart visualization
+     *
+     * @return List of monthly revenue amounts for the past 12 months
+     */
+    @Query("SELECT " +
+           "COALESCE(SUM(totalAmount), 0.0) as revenue " +
+           "FROM bookings " +
+           "WHERE bookingStatus = 'CONFIRMED' " +
+           "AND bookingDate >= :startDate " +
+           "GROUP BY strftime('%Y-%m', datetime(bookingDate/1000, 'unixepoch')) " +
+           "ORDER BY bookingDate ASC")
+    List<Double> getMonthlyRevenueData(long startDate);
 }

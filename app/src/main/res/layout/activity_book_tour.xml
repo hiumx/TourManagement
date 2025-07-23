@@ -122,9 +122,12 @@
                             android:id="@+id/btn_decrement"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
+                            android:background="@drawable/button_outline"
                             android:text="-"
-                            android:textSize="18sp"
-                            android:background="@drawable/button_outline" />
+                            android:textColor="#2196F3"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:gravity="center" />
 
                         <EditText
                             android:id="@+id/et_number_of_people"
@@ -142,9 +145,12 @@
                             android:id="@+id/btn_increment"
                             android:layout_width="48dp"
                             android:layout_height="48dp"
+                            android:background="@drawable/button_outline"
                             android:text="+"
-                            android:textSize="18sp"
-                            android:background="@drawable/button_outline" />
+                            android:textColor="#2196F3"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:gravity="center" />
 
                     </LinearLayout>
 

@@ -3,6 +3,12 @@ package com.example.tourmanagement.utils;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
+import com.example.tourmanagement.model.Booking;
+import com.example.tourmanagement.model.Tour;
+import com.example.tourmanagement.model.User;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Random;
 import javax.mail.Authenticator;
@@ -210,6 +216,232 @@ public class EmailService {
                 "        <div style='background-color: #333; color: white; padding: 10px; text-align: center; font-size: 12px;'>" +
                 "            <p>This is an automated message. Please do not reply to this email.</p>" +
                 "            <p>&copy; 2025 Tour Management System. All rights reserved.</p>" +
+                "        </div>" +
+                "    </div>" +
+                "</body>" +
+                "</html>";
+    }
+
+    /**
+     * Sends booking confirmation email with ticket information
+     *
+     * @param user User who made the booking
+     * @param tour Tour that was booked
+     * @param booking Booking details
+     * @param callback Callback for success/failure handling
+     */
+    public static void sendBookingConfirmationEmail(User user, Tour tour, Booking booking, EmailCallback callback) {
+        new SendBookingEmailTask(user, tour, booking, callback).execute();
+    }
+
+    /**
+     * AsyncTask for sending booking confirmation emails in background thread
+     */
+    private static class SendBookingEmailTask extends AsyncTask<Void, Void, Boolean> {
+        private User user;
+        private Tour tour;
+        private Booking booking;
+        private EmailCallback callback;
+        private String errorMessage;
+
+        public SendBookingEmailTask(User user, Tour tour, Booking booking, EmailCallback callback) {
+            this.user = user;
+            this.tour = tour;
+            this.booking = booking;
+            this.callback = callback;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                // Create properties for SMTP configuration
+                Properties props = new Properties();
+                props.put("mail.smtp.auth", "true");
+                props.put("mail.smtp.starttls.enable", "true");
+                props.put("mail.smtp.starttls.required", "true");
+                props.put("mail.smtp.host", SMTP_HOST);
+                props.put("mail.smtp.port", SMTP_PORT);
+                props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+                props.put("mail.smtp.ssl.trust", SMTP_HOST);
+
+                // Create authenticator
+                Authenticator authenticator = new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(EMAIL_FROM, EMAIL_PASSWORD);
+                    }
+                };
+
+                // Create session
+                Session session = Session.getInstance(props, authenticator);
+
+                // Create message
+                Message message = new MimeMessage(session);
+                message.setFrom(new InternetAddress(EMAIL_FROM));
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(user.getEmail()));
+                message.setSubject("Tour Management - Booking Confirmation & E-Ticket");
+
+                // Create email content with ticket information
+                String emailContent = createBookingConfirmationEmailContent(user, tour, booking);
+                message.setContent(emailContent, "text/html; charset=utf-8");
+
+                // Send email
+                Transport.send(message);
+
+                Log.d(TAG, "Booking confirmation email sent successfully to: " + user.getEmail());
+                return true;
+
+            } catch (MessagingException e) {
+                Log.e(TAG, "Failed to send booking confirmation email", e);
+                errorMessage = "Failed to send email: " + e.getMessage();
+                return false;
+            } catch (Exception e) {
+                Log.e(TAG, "Unexpected error while sending booking confirmation email", e);
+                errorMessage = "Unexpected error: " + e.getMessage();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (callback != null) {
+                if (success) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure(errorMessage != null ? errorMessage : "Unknown error occurred");
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates HTML email content for booking confirmation with ticket details
+     *
+     * @param user User who made the booking
+     * @param tour Tour that was booked
+     * @param booking Booking details
+     * @return HTML email content with ticket information
+     */
+    private static String createBookingConfirmationEmailContent(User user, Tour tour, Booking booking) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy 'at' HH:mm", Locale.getDefault());
+        SimpleDateFormat tourDateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+
+        String bookingDate = dateFormat.format(new Date(booking.getBookingDate()));
+        String tourDate = tourDateFormat.format(new Date(tour.getTourTime()));
+
+        // Generate booking reference number
+        String bookingReference = "TM" + String.format("%06d", booking.getId());
+
+        return "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "    <meta charset='UTF-8'>" +
+                "    <title>Booking Confirmation - Tour Management</title>" +
+                "</head>" +
+                "<body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0;'>" +
+                "    <div style='max-width: 650px; margin: 0 auto; background-color: #ffffff;'>" +
+                "        <!-- Header -->" +
+                "        <div style='background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; padding: 30px 20px; text-align: center;'>" +
+                "            <h1 style='margin: 0; font-size: 28px; font-weight: bold;'>🎫 Tour Management</h1>" +
+                "            <h2 style='margin: 10px 0 0 0; font-size: 20px; font-weight: normal;'>Booking Confirmation & E-Ticket</h2>" +
+                "        </div>" +
+
+                "        <!-- Booking Status -->" +
+                "        <div style='background-color: #e8f5e8; border-left: 5px solid #4CAF50; padding: 20px; margin: 0;'>" +
+                "            <div style='display: flex; align-items: center; justify-content: center;'>" +
+                "                <span style='font-size: 24px; color: #4CAF50; margin-right: 10px;'>✅</span>" +
+                "                <h3 style='margin: 0; color: #2e7d32; font-size: 18px;'>Booking Confirmed Successfully!</h3>" +
+                "            </div>" +
+                "        </div>" +
+
+                "        <!-- Main Content -->" +
+                "        <div style='padding: 30px 20px;'>" +
+                "            <p style='font-size: 16px; margin-bottom: 20px;'>Dear " + user.getFullName() + ",</p>" +
+                "            <p style='font-size: 14px; margin-bottom: 25px;'>Thank you for choosing Tour Management! Your booking has been confirmed. Below are your ticket details:</p>" +
+
+                "            <!-- Ticket Information -->" +
+                "            <div style='background-color: #f8f9fa; border: 2px dashed #4CAF50; border-radius: 10px; padding: 25px; margin: 25px 0;'>" +
+                "                <div style='text-align: center; margin-bottom: 20px;'>" +
+                "                    <h2 style='color: #4CAF50; margin: 0; font-size: 22px;'>🎫 E-TICKET</h2>" +
+                "                    <p style='margin: 5px 0; font-size: 16px; font-weight: bold; color: #333;'>Booking Reference: " + bookingReference + "</p>" +
+                "                </div>" +
+
+                "                <!-- Tour Details -->" +
+                "                <table style='width: 100%; border-collapse: collapse; margin-top: 20px;'>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555; width: 35%;'>Tour Name:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #333;'>" + tour.getTourName() + "</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Destination:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #333;'>" + tour.getTourLocation() + "</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Tour Date:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #333;'>" + tourDate + "</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Duration:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #333;'>" + tour.getDuration() + " days</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Number of People:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #333;'>" + booking.getNumberOfPeople() + " person(s)</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Total Amount:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #4CAF50; font-weight: bold; font-size: 16px;'>$" + String.format("%.2f", booking.getTotalAmount()) + "</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Booking Date:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #333;'>" + bookingDate + "</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Status:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0;'>" +
+                "                            <span style='background-color: #4CAF50; color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold;'>" + booking.getBookingStatus() + "</span>" +
+                "                        </td>" +
+                "                    </tr>" +
+                "                </table>" +
+
+                // Add notes if available
+                (booking.getNotes() != null && !booking.getNotes().trim().isEmpty() ?
+                "                <div style='margin-top: 20px; padding: 15px; background-color: #fff3cd; border-radius: 5px; border-left: 4px solid #ffc107;'>" +
+                "                    <p style='margin: 0; font-weight: bold; color: #856404;'>Special Notes:</p>" +
+                "                    <p style='margin: 5px 0 0 0; color: #856404;'>" + booking.getNotes() + "</p>" +
+                "                </div>" : "") +
+                "            </div>" +
+
+                "            <!-- Important Information -->" +
+                "            <div style='background-color: #e3f2fd; border-radius: 8px; padding: 20px; margin: 25px 0;'>" +
+                "                <h3 style='color: #1565c0; margin: 0 0 15px 0; font-size: 18px;'>📋 Important Information</h3>" +
+                "                <ul style='margin: 0; padding-left: 20px; color: #333;'>" +
+                "                    <li style='margin-bottom: 8px;'>Please arrive at the meeting point 30 minutes before the tour starts</li>" +
+                "                    <li style='margin-bottom: 8px;'>Bring a valid ID and this e-ticket (digital or printed)</li>" +
+                "                    <li style='margin-bottom: 8px;'>Check weather conditions and dress appropriately</li>" +
+                "                    <li style='margin-bottom: 8px;'>Contact us immediately if you need to make changes</li>" +
+                "                    <li style='margin-bottom: 8px;'>Cancellations must be made at least 24 hours in advance</li>" +
+                "                </ul>" +
+                "            </div>" +
+
+                "            <!-- Contact Information -->" +
+                "            <div style='background-color: #f5f5f5; border-radius: 8px; padding: 20px; margin: 25px 0;'>" +
+                "                <h3 style='color: #333; margin: 0 0 15px 0; font-size: 18px;'>📞 Need Help?</h3>" +
+                "                <p style='margin: 0 0 10px 0; color: #555;'>If you have any questions or need assistance, feel free to contact us:</p>" +
+                "                <p style='margin: 5px 0; color: #555;'><strong>Email:</strong> support@tourmanagement.com</p>" +
+                "                <p style='margin: 5px 0; color: #555;'><strong>Phone:</strong> +1 (555) 123-4567</p>" +
+                "                <p style='margin: 5px 0; color: #555;'><strong>Support Hours:</strong> 9:00 AM - 6:00 PM (Mon-Fri)</p>" +
+                "            </div>" +
+
+                "            <p style='font-size: 14px; color: #666; margin-top: 30px;'>We're excited to have you join us on this amazing journey! Have a wonderful trip!</p>" +
+                "            <p style='font-size: 14px; color: #333; margin-top: 20px;'>Best regards,<br><strong>Tour Management Team</strong></p>" +
+                "        </div>" +
+
+                "        <!-- Footer -->" +
+                "        <div style='background-color: #333; color: #ccc; padding: 20px; text-align: center; font-size: 12px;'>" +
+                "            <p style='margin: 0 0 10px 0;'>This is an automated confirmation email. Please do not reply to this email.</p>" +
+                "            <p style='margin: 0;'>&copy; 2025 Tour Management System. All rights reserved.</p>" +
+                "            <p style='margin: 10px 0 0 0;'>Follow us on social media for updates and travel tips!</p>" +
                 "        </div>" +
                 "    </div>" +
                 "</body>" +

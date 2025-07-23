@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.tourmanagement.R;
 import com.example.tourmanagement.database.TourManagementDatabase;
@@ -61,6 +62,16 @@ public class ChangePasswordActivity extends AppCompatActivity {
         }
 
         setupEventListeners();
+
+        // Handle back button press - prevent going back to login screen
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // Show a message indicating password change is mandatory
+                Toast.makeText(ChangePasswordActivity.this,
+                        "You must change your password to continue", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**
@@ -227,12 +238,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
-    }
-
-    @Override
-    public void onBackPressed() {
-        // Prevent going back - force password change
-        Toast.makeText(this, "You must change your password to continue", Toast.LENGTH_SHORT).show();
     }
 
     @Override

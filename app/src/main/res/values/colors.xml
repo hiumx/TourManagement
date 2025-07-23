@@ -22,6 +22,7 @@
     <color name="text_secondary">#757575</color>
     <color name="text_hint">#BDBDBD</color>
     <color name="text_white">#FFFFFF</color>
+    <color name="text_white_secondary">#E0E0E0</color>
 
     <!-- Status Colors -->
     <color name="success_color">#4CAF50</color>

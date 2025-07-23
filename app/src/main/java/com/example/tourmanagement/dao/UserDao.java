@@ -127,13 +127,38 @@ public interface UserDao {
     void clearPasswordChangeRequirement(int userId);
 
     /**
-     * Gets all users (for admin functionality)
-     * Used for user management by administrators
+     * Retrieves all users from the database
+     * Used for user management and admin functions
      *
      * @return List of all users
      */
     @Query("SELECT * FROM users ORDER BY createdAt DESC")
     List<User> getAllUsers();
+
+    /**
+     * Gets the count of all users in the system
+     *
+     * @return Total number of users
+     */
+    @Query("SELECT COUNT(*) FROM users")
+    int getTotalUsersCount();
+
+    /**
+     * Gets the count of admin users in the system
+     *
+     * @return Number of admin users
+     */
+    @Query("SELECT COUNT(*) FROM users WHERE isAdmin = 1")
+    int getAdminUsersCount();
+
+    /**
+     * Searches users by username or full name
+     *
+     * @param searchQuery Search term
+     * @return List of matching users
+     */
+    @Query("SELECT * FROM users WHERE username LIKE '%' || :searchQuery || '%' OR fullName LIKE '%' || :searchQuery || '%'")
+    List<User> searchUsers(String searchQuery);
 
     /**
      * Checks if username already exists

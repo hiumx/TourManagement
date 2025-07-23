@@ -19,6 +19,7 @@ import com.example.tourmanagement.database.TourManagementDatabase;
 import com.example.tourmanagement.model.Booking;
 import com.example.tourmanagement.model.Tour;
 import com.example.tourmanagement.model.User;
+import com.example.tourmanagement.utils.EmailService;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -485,39 +486,56 @@ public class BookTourActivity extends AppCompatActivity {
             return;
         }
 
-        try {
-            // Create booking object
-            Booking booking = new Booking(
-                    currentUser.getId(),
-                    selectedTour.getId(),
-                    numberOfPeople,
-                    totalCost
-            );
+        // Use background thread for database operations
+        new Thread(() -> {
+            try {
+                // Create booking object
+                Booking booking = new Booking(
+                        currentUser.getId(),
+                        selectedTour.getId(),
+                        numberOfPeople,
+                        totalCost
+                );
 
-            // Set additional booking details
-            booking.setNotes(etNotes.getText().toString().trim());
-            booking.setQrCode(createPaymentQRCodeContent());
-            booking.setBookingStatus("CONFIRMED");
-            booking.setPaymentStatus("PAID"); // Assuming payment via QR code
+                // Set additional booking details
+                booking.setNotes(etNotes.getText().toString().trim());
+                booking.setQrCode(createPaymentQRCodeContent());
+                booking.setBookingStatus("CONFIRMED");
+                booking.setPaymentStatus("PAID"); // Assuming payment via QR code
 
-            // Insert booking into database
-            long bookingId = database.bookingDao().insertBooking(booking);
+                // Insert booking into database
+                long bookingId = database.bookingDao().insertBooking(booking);
 
-            if (bookingId > 0) {
-                // Update tour booking count
-                database.tourDao().updateBookingCount(selectedTour.getId(), numberOfPeople);
+                if (bookingId > 0) {
+                    // Update tour booking count
+                    database.tourDao().updateBookingCount(selectedTour.getId(), numberOfPeople);
 
-                showToast("Booking confirmed successfully!");
+                    // Update booking with the generated ID
+                    booking.setId((int) bookingId);
 
-                // Navigate to ticket display
-                navigateToTicket(bookingId);
-            } else {
-                showToast("Failed to create booking. Please try again.");
+                    // Switch back to main thread for UI operations
+                    runOnUiThread(() -> {
+                        showToast("Booking confirmed successfully!");
+
+                        // Navigate to ticket display immediately
+                        navigateToTicket(bookingId);
+
+                        // Send booking confirmation email in background (don't wait for it)
+                        sendBookingConfirmationEmail(booking);
+                    });
+                } else {
+                    runOnUiThread(() -> {
+                        showToast("Failed to create booking. Please try again.");
+                    });
+                }
+
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    showToast("Booking error: " + e.getMessage());
+                    Log.e("BookTourActivity", "Booking error", e);
+                });
             }
-
-        } catch (Exception e) {
-            showToast("Booking error: " + e.getMessage());
-        }
+        }).start();
     }
 
     /**
@@ -546,8 +564,13 @@ public class BookTourActivity extends AppCompatActivity {
      */
     private void navigateToTicket(long bookingId) {
         Intent intent = new Intent(this, TicketActivity.class);
-        intent.putExtra("booking_id", bookingId);
+        // Fix: Convert long to int since our Booking model uses int for ID
+        intent.putExtra("booking_id", (int) bookingId);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        // Add debug logging
+        android.util.Log.d("BookTourActivity", "Navigating to ticket with booking ID: " + bookingId);
+
         startActivity(intent);
         finish();
     }
@@ -623,5 +646,42 @@ public class BookTourActivity extends AppCompatActivity {
         } catch (Exception e) {
             showToast("Error opening MoMo: " + e.getMessage());
         }
+    }
+
+    /**
+     * Sends a booking confirmation email to the user with detailed ticket information
+     *
+     * @param booking The booking object containing details
+     */
+    private void sendBookingConfirmationEmail(Booking booking) {
+        // Check if user has a valid email address
+        if (currentUser.getEmail() == null || currentUser.getEmail().trim().isEmpty()) {
+            Log.w("BookTourActivity", "User email is empty, skipping email notification");
+            return;
+        }
+
+        // Set the booking ID for the confirmation email
+        booking.setId((int) booking.getId());
+
+        // Send email using the enhanced EmailService
+        EmailService.sendBookingConfirmationEmail(currentUser, selectedTour, booking, new EmailService.EmailCallback() {
+            @Override
+            public void onSuccess() {
+                runOnUiThread(() -> {
+                    Log.d("BookTourActivity", "Booking confirmation email sent successfully");
+                    // Optional: Show a subtle notification to user
+                    showToast("Confirmation email sent to " + currentUser.getEmail());
+                });
+            }
+
+            @Override
+            public void onFailure(String error) {
+                runOnUiThread(() -> {
+                    Log.e("BookTourActivity", "Failed to send booking confirmation email: " + error);
+                    // Don't show error to user as email is secondary feature
+                    // The booking is still successful even if email fails
+                });
+            }
+        });
     }
 }

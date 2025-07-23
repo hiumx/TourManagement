@@ -24,6 +24,7 @@ import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tourmanagement.activity.AddEditTourActivity;
 import com.example.tourmanagement.activity.BookTourActivity;
 import com.example.tourmanagement.activity.AddTourActivity;
 import com.example.tourmanagement.adapter.TourAdapter;
@@ -152,6 +153,20 @@ public class MainActivity extends AppCompatActivity {
                 android.util.Log.d("MainActivity", "Tour name: " + tour.getTourName());
 
                 startActivity(intent);
+            }
+
+            @Override
+            public void onEditTourClick(Tour tour) {
+                // Check if user is admin and navigate to edit tour (admin only)
+                boolean isAdmin = getSharedPreferences("TourManagementPrefs", MODE_PRIVATE)
+                        .getBoolean("is_admin", false);
+                if (isAdmin) {
+                    Intent intent = new Intent(MainActivity.this, AddEditTourActivity.class);
+                    intent.putExtra("tour_id", tour.getId());
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(MainActivity.this, "Edit tour feature (Admin only)", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override

@@ -68,6 +68,9 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment:2.7.6")
     implementation("androidx.navigation:navigation-ui:2.7.6")
 
+    // Charts for revenue management and analytics
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
     // JavaMail API for email functionality (forgot password feature)
     implementation("com.sun.mail:android-mail:1.6.7")
     implementation("com.sun.mail:android-activation:1.6.7")

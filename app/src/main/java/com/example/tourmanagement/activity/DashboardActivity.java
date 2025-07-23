@@ -95,6 +95,9 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
 
         // Initialize custom sliding popup menu
         initializeSlidingMenu();
+
+        // Update admin menu visibility after menu is initialized
+        updateAdminMenuVisibility();
     }
 
     /**
@@ -286,6 +289,26 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
             }
 
             @Override
+            public void onUserManagementClick() {
+                if (isCurrentUserAdmin()) {
+                    Intent intent = new Intent(DashboardActivity.this, UserManagementActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(DashboardActivity.this, "Admin access required", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onRevenueManagementClick() {
+                if (isCurrentUserAdmin()) {
+                    Intent intent = new Intent(DashboardActivity.this, RevenueManagementActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(DashboardActivity.this, "Admin access required", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
             public void onLogoutClick() {
                 // Show confirmation dialog for logout
                 new androidx.appcompat.app.AlertDialog.Builder(DashboardActivity.this)
@@ -296,6 +319,20 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
                     .show();
             }
         });
+
+        // Configure menu for admin users
+        configureAdminMenu();
+    }
+
+    /**
+     * Configures the sliding menu to show/hide admin options based on user permissions
+     */
+    private void configureAdminMenu() {
+        if (slidingPopupMenu != null && isCurrentUserAdmin()) {
+            // Show admin menu items for admin users
+            // This will be handled in the SlidingPopupMenu class to show admin sections
+            android.util.Log.d("DashboardActivity", "Configuring admin menu for admin user");
+        }
     }
 
     /**
@@ -351,52 +388,41 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
     }
 
     /**
-     * Handles tour booking button clicks
+     * Handles book tour button clicks from RecyclerView
      *
-     * @param tour Tour to book
+     * @param tour Selected tour object
      */
     @Override
     public void onBookTourClick(Tour tour) {
-        if (tour.hasAvailableSlots()) {
-            navigateToBookTour(tour);
+        navigateToBookTour(tour);
+    }
+
+    /**
+     * Handles edit tour button clicks from RecyclerView (Admin only)
+     *
+     * @param tour Selected tour object
+     */
+    @Override
+    public void onEditTourClick(Tour tour) {
+        if (isCurrentUserAdmin()) {
+            navigateToEditTour(tour);
         } else {
-            showToast("Sorry, this tour is fully booked");
+            Toast.makeText(this, "Edit tour feature (Admin only)", Toast.LENGTH_SHORT).show();
         }
     }
 
     /**
-     * Handles edit tour button clicks (admin feature)
+     * Handles delete tour button clicks from RecyclerView (Admin only)
      *
-     * @param tour Tour to edit
-     */
-//    @Override
-    public void onEditTourClick(Tour tour) {
-        Intent intent = new Intent(this, AddEditTourActivity.class);
-        intent.putExtra("tour_id", tour.getId());
-        startActivityForResult(intent, 1001);
-    }
-
-    /**
-     * Handles delete tour button clicks (admin feature)
-     *
-     * @param tour Tour to delete
+     * @param tour Selected tour object
      */
     @Override
     public void onDeleteTourClick(Tour tour) {
-        new androidx.appcompat.app.AlertDialog.Builder(this)
-            .setTitle("Delete Tour")
-            .setMessage("Are you sure you want to delete '" + tour.getTourName() + "'?")
-            .setPositiveButton("Delete", (dialog, which) -> {
-                try {
-                    database.tourDao().deleteTour(tour);
-                    showToast("Tour deleted successfully");
-                    loadTours(); // Refresh the list
-                } catch (Exception e) {
-                    showToast("Error deleting tour: " + e.getMessage());
-                }
-            })
-            .setNegativeButton("Cancel", null)
-            .show();
+        if (isCurrentUserAdmin()) {
+            showDeleteTourConfirmation(tour);
+        } else {
+            Toast.makeText(this, "Delete tour feature (Admin only)", Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -421,6 +447,40 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
         intent.putExtra("USER_ID", currentUser.getId());
         startActivity(intent);
     }
+
+    /**
+     * Navigates to edit tour activity (Admin only)
+     *
+     * @param tour Tour to edit
+     */
+    private void navigateToEditTour(Tour tour) {
+        Intent intent = new Intent(this, AddEditTourActivity.class);
+        intent.putExtra("tour_id", tour.getId());
+        startActivityForResult(intent, 1001);
+    }
+
+    /**
+     * Shows confirmation dialog for tour deletion (Admin only)
+     *
+     * @param tour Tour to delete
+     */
+    private void showDeleteTourConfirmation(Tour tour) {
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Delete Tour")
+            .setMessage("Are you sure you want to delete '" + tour.getTourName() + "'?")
+            .setPositiveButton("Delete", (dialog, which) -> {
+                try {
+                    database.tourDao().deleteTour(tour);
+                    showToast("Tour deleted successfully");
+                    loadTours(); // Refresh the list
+                } catch (Exception e) {
+                    showToast("Error deleting tour: " + e.getMessage());
+                }
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+    }
+
 
     /**
      * Navigates to add new tour activity (admin feature)
@@ -477,6 +537,15 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
         return isAdmin || (currentUser != null && currentUser.getId() == ADMIN_USER_ID);
     }
 
+    /**
+     * Updates admin menu visibility based on current user's admin status
+     */
+    private void updateAdminMenuVisibility() {
+        if (slidingPopupMenu != null) {
+            slidingPopupMenu.setAdminMenuVisibility(isCurrentUserAdmin());
+            android.util.Log.d("DashboardActivity", "Admin menu visibility updated: " + isCurrentUserAdmin());
+        }
+    }
 
     /**
      * Shows a toast message to the user

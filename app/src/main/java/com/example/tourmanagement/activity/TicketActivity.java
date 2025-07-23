@@ -239,22 +239,38 @@ public class TicketActivity extends AppCompatActivity {
      * @param status Booking status string
      */
     private void setStatusColor(String status) {
-        int colorResId;
+        int backgroundColorResId;
+        int textColorResId = R.color.text_white; // Always use white text for contrast
+
         switch (status.toUpperCase()) {
             case "CONFIRMED":
-                colorResId = R.color.success_color;
+                backgroundColorResId = R.color.success_color;
                 break;
             case "PENDING":
-                colorResId = R.color.warning_color;
+                backgroundColorResId = R.color.warning_color;
                 break;
             case "CANCELLED":
-                colorResId = R.color.error_color;
+                backgroundColorResId = R.color.error_color;
                 break;
             default:
-                colorResId = R.color.primary_color;
+                backgroundColorResId = R.color.primary_color;
                 break;
         }
-        tvBookingStatus.setTextColor(ContextCompat.getColor(this, colorResId));
+
+        // Set text color to white for better contrast
+        tvBookingStatus.setTextColor(ContextCompat.getColor(this, textColorResId));
+
+        // Create a new background drawable with the appropriate color
+        try {
+            // Get the background drawable and set its color
+            android.graphics.drawable.GradientDrawable background =
+                (android.graphics.drawable.GradientDrawable) ContextCompat.getDrawable(this, R.drawable.status_background).mutate();
+            background.setColor(ContextCompat.getColor(this, backgroundColorResId));
+            tvBookingStatus.setBackground(background);
+        } catch (Exception e) {
+            // Fallback: just set background color
+            tvBookingStatus.setBackgroundColor(ContextCompat.getColor(this, backgroundColorResId));
+        }
     }
 
     /**

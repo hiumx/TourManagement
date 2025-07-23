@@ -252,22 +252,37 @@ public class BookingHistoryAdapter extends RecyclerView.Adapter<BookingHistoryAd
          * @param status Status value
          */
         private void setStatusColor(TextView textView, String status) {
-            int colorResId;
+            int backgroundColorResId;
+
             switch (status.toUpperCase()) {
                 case "CONFIRMED":
-                    colorResId = R.color.success_color;
+                    backgroundColorResId = R.color.success_color;
                     break;
                 case "PENDING":
-                    colorResId = R.color.warning_color;
+                    backgroundColorResId = R.color.warning_color;
                     break;
                 case "CANCELLED":
-                    colorResId = R.color.error_color;
+                    backgroundColorResId = R.color.error_color;
                     break;
                 default:
-                    colorResId = R.color.text_secondary;
+                    backgroundColorResId = R.color.text_secondary;
                     break;
             }
-            textView.setTextColor(context.getResources().getColor(colorResId));
+
+            // Always use white text for better contrast against colored backgrounds
+            textView.setTextColor(context.getResources().getColor(R.color.text_white));
+
+            // Create a new background drawable with the appropriate color
+            try {
+                // Get the background drawable and set its color
+                android.graphics.drawable.GradientDrawable background =
+                        (android.graphics.drawable.GradientDrawable) context.getResources().getDrawable(R.drawable.status_background).mutate();
+                background.setColor(context.getResources().getColor(backgroundColorResId));
+                textView.setBackground(background);
+            } catch (Exception e) {
+                // Fallback: just set background color
+                textView.setBackgroundColor(context.getResources().getColor(backgroundColorResId));
+            }
         }
 
         /**

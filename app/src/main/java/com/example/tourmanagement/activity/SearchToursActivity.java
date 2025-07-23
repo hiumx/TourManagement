@@ -101,6 +101,20 @@ public class SearchToursActivity extends AppCompatActivity {
             }
 
             @Override
+            public void onEditTourClick(Tour tour) {
+                // Check if user is admin and navigate to edit tour (admin only)
+                boolean isAdmin = getSharedPreferences("TourManagementPrefs", MODE_PRIVATE)
+                        .getBoolean("is_admin", false);
+                if (isAdmin) {
+                    Intent intent = new Intent(SearchToursActivity.this, AddEditTourActivity.class);
+                    intent.putExtra("tour_id", tour.getId());
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(SearchToursActivity.this, "Edit tour feature (Admin only)", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
             public void onDeleteTourClick(Tour tour) {
                 // Show confirmation dialog before deleting (admin only)
                 showDeleteConfirmationDialog(tour);
