@@ -132,6 +132,12 @@
             android:exported="false"
             android:parentActivityName=".activity.DiscountManagementActivity" />
 
+        <!-- Settings Activity -->
+        <activity
+            android:name=".activity.SettingsActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
     </application>
 
 </manifest>

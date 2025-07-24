@@ -49,70 +49,81 @@ public class SettingsActivity extends AppCompatActivity {
         initializeViews();
 
         // Load current settings
-        loadCurrentSettings();
+        loadSettings();
 
         // Setup event listeners
         setupEventListeners();
     }
 
     /**
-     * Initializes all UI components
+     * Initialize all UI components
      */
     private void initializeViews() {
-        switchDarkMode = findViewById(R.id.switch_dark_mode);
-        tvThemeStatus = findViewById(R.id.tv_theme_status);
-
         // Setup toolbar
-        setSupportActionBar(findViewById(R.id.toolbar));
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle("Settings");
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        // Set app version
+        // Initialize switches and text views
+        switchDarkMode = findViewById(R.id.switch_dark_mode);
+        tvThemeStatus = findViewById(R.id.tv_theme_status);
+
+        // Set app version safely
         TextView tvAppVersion = findViewById(R.id.tv_app_version);
-        try {
-            String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-            tvAppVersion.setText(getString(R.string.version_format, versionName));
-        } catch (Exception e) {
-            tvAppVersion.setText(getString(R.string.default_version));
+        if (tvAppVersion != null) {
+            try {
+                String versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+                tvAppVersion.setText("Version " + versionName);
+            } catch (Exception e) {
+                tvAppVersion.setText("Version 1.0.0");
+            }
         }
     }
 
     /**
-     * Loads current settings from preferences
+     * Load current settings from SharedPreferences
      */
-    private void loadCurrentSettings() {
+    private void loadSettings() {
         boolean isDarkMode = sharedPreferences.getBoolean(KEY_DARK_MODE, false);
         switchDarkMode.setChecked(isDarkMode);
         updateThemeStatus(isDarkMode);
     }
 
     /**
-     * Sets up event listeners for UI components
+     * Setup event listeners for UI components
      */
     private void setupEventListeners() {
-        switchDarkMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            // Save preference
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean(KEY_DARK_MODE, isChecked);
-            editor.apply();
+        switchDarkMode.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // Save preference
+                sharedPreferences.edit().putBoolean(KEY_DARK_MODE, isChecked).apply();
 
-            // Apply theme change
-            applyTheme(isChecked);
+                // Update theme status text
+                updateThemeStatus(isChecked);
 
-            // Update status text
-            updateThemeStatus(isChecked);
-
-            // Show feedback to user
-            android.widget.Toast.makeText(SettingsActivity.this,
-                isChecked ? getString(R.string.dark_theme_enabled) : getString(R.string.light_theme_enabled),
-                android.widget.Toast.LENGTH_SHORT).show();
+                // Apply theme change
+                applyTheme(isChecked);
+            }
         });
     }
 
     /**
-     * Applies the selected theme to the application
+     * Update theme status text
+     */
+    private void updateThemeStatus(boolean isDarkMode) {
+        if (isDarkMode) {
+            tvThemeStatus.setText("Dark theme is currently active");
+        } else {
+            tvThemeStatus.setText("Light theme is currently active");
+        }
+    }
+
+    /**
+     * Apply theme change immediately
      */
     private void applyTheme(boolean isDarkMode) {
         if (isDarkMode) {
@@ -123,22 +134,11 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     /**
-     * Updates the theme status text
-     */
-    private void updateThemeStatus(boolean isDarkMode) {
-        if (isDarkMode) {
-            tvThemeStatus.setText(getString(R.string.dark_theme_active));
-        } else {
-            tvThemeStatus.setText(getString(R.string.light_theme_active));
-        }
-    }
-
-    /**
      * Handles back button press in toolbar
      */
     @Override
     public boolean onSupportNavigateUp() {
-        getOnBackPressedDispatcher().onBackPressed();
+        onBackPressed();
         return true;
     }
 }
