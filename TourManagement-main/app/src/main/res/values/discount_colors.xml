@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Discount suggestion colors -->
+    <color name="discount_text_light">#E6FFFFFF</color>
+</resources>

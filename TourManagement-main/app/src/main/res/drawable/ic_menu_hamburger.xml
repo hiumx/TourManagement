@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?attr/colorOnSurface">
+
+    <!-- Modern hamburger menu with rounded lines -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M3,6h18v2H3V6zM3,11h18v2H3V11zM3,16h18v2H3V16z"/>
+
+    <!-- Add subtle gradient effect -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M3,6h18v2H3V6z"
+        android:fillAlpha="0.9"/>
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M3,11h18v2H3V11z"
+        android:fillAlpha="0.8"/>
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M3,16h18v2H3V16z"
+        android:fillAlpha="0.9"/>
+
+</vector>
+

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permissions for internet access (if needed for image loading) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Camera permission for QR code scanning (optional) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <application
+        android:name=".TourManagementApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.TourManagement"
+        tools:targetApi="31">
+
+        <!-- Login Activity - Main launcher -->
+        <activity
+            android:name=".activity.LoginActivity"
+            android:exported="true"
+            android:theme="@style/Theme.TourManagement">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Registration Activity -->
+        <activity
+            android:name=".activity.RegisterActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.LoginActivity" />
+
+        <!-- Dashboard Activity -->
+        <activity
+            android:name=".activity.DashboardActivity"
+            android:exported="false" />
+
+        <!-- Book Tour Activity -->
+        <activity
+            android:name=".activity.BookTourActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Forgot Password Activity -->
+        <activity
+            android:name=".activity.ForgotPasswordActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.LoginActivity" />
+
+        <!-- Change Password Activity -->
+        <activity
+            android:name=".activity.ChangePasswordActivity"
+            android:exported="false" />
+
+        <!-- Profile Activity -->
+        <activity
+            android:name=".activity.ProfileActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Add/Edit Tour Activity (Admin only) -->
+        <activity
+            android:name=".activity.AddEditTourActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Add Tour Activity (Admin only) -->
+        <activity
+            android:name=".activity.AddTourActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Tour Details Activity -->
+        <activity
+            android:name=".activity.TourDetailsActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Search Tours Activity -->
+        <activity
+            android:name=".activity.SearchToursActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Booking History Activity -->
+        <activity
+            android:name=".activity.BookingHistoryActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Ticket Activity -->
+        <activity
+            android:name=".activity.TicketActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.BookingHistoryActivity" />
+
+        <!-- User Management Activity (Admin only) -->
+        <activity
+            android:name=".activity.UserManagementActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Revenue Management Activity (Admin only) -->
+        <activity
+            android:name=".activity.RevenueManagementActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Booking Management Activity (Admin only) -->
+        <activity
+            android:name=".activity.BookingManagementActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Discount Management Activity (Admin only) -->
+        <activity
+            android:name=".activity.DiscountManagementActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Add/Edit Discount Activity (Admin only) -->
+        <activity
+            android:name=".activity.AddEditDiscountActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DiscountManagementActivity" />
+
+    </application>
+
+</manifest>

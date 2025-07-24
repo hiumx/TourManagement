@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Beautiful Modern Dark Theme -->
+    <style name="Base.Theme.TourManagement" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary colors - Beautiful Indigo/Violet -->
+        <item name="colorPrimary">@color/primary_color_dark</item>
+        <item name="colorPrimaryVariant">@color/primary_dark_dark</item>
+        <item name="colorOnPrimary">@color/text_primary_dark</item>
+
+        <!-- Secondary colors - Vibrant Cyan accents -->
+        <item name="colorSecondary">@color/accent_color_dark</item>
+        <item name="colorSecondaryVariant">@color/accent_dark_dark</item>
+        <item name="colorOnSecondary">@color/text_primary_dark</item>
+
+        <!-- Background colors - Modern dark with blue undertones -->
+        <item name="android:colorBackground">@color/background_color_dark</item>
+        <item name="colorSurface">@color/card_background_dark</item>
+        <item name="colorOnSurface">@color/text_primary_dark</item>
+
+        <!-- Text colors - High contrast for readability -->
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="android:textColorSecondary">@color/text_secondary_dark</item>
+        <item name="android:textColorHint">@color/text_hint_dark</item>
+
+        <!-- Status bar - Deep indigo for immersive experience -->
+        <item name="android:statusBarColor">@color/primary_dark_dark</item>
+        <item name="android:navigationBarColor">@color/background_color_dark</item>
+
+        <!-- Window flags for edge-to-edge experience -->
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <!-- Material Design 3 color tokens -->
+        <item name="colorError">@color/error_color_dark</item>
+        <item name="colorOnError">@color/text_primary_dark</item>
+        <item name="colorOutline">@color/border_color_dark</item>
+        <item name="colorSurfaceVariant">@color/surface_dark</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary_dark</item>
+    </style>
+
+    <style name="Theme.TourManagement" parent="Base.Theme.TourManagement" />
+</resources>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    android:background="@color/card_background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <!-- Discount Type Icon -->
+            <ImageView
+                android:id="@+id/iv_discount_type"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_percent"
+                android:layout_marginEnd="12dp" />
+
+            <!-- Discount Name and Status -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_discount_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Discount Name"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary" />
+
+                <TextView
+                    android:id="@+id/tv_discount_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Percentage Discount"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="2dp" />
+
+            </LinearLayout>
+
+            <!-- Status Icon -->
+            <ImageView
+                android:id="@+id/iv_discount_status"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_check_circle" />
+
+            <!-- Discount Value -->
+            <TextView
+                android:id="@+id/tv_discount_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="15%"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="@color/accent_color"
+                android:layout_marginStart="12dp" />
+
+        </LinearLayout>
+
+        <!-- Description -->
+        <TextView
+            android:id="@+id/tv_discount_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Discount description"
+            android:textSize="14sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Details Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_background"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp">
+
+            <!-- Tour Name -->
+            <TextView
+                android:id="@+id/tv_tour_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Global Discount"
+                android:textSize="13sp"
+                android:textColor="@color/primary_color"
+                android:textStyle="bold"
+                android:drawableStart="@drawable/ic_tour"
+                android:drawablePadding="8dp"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Validity Period -->
+            <TextView
+                android:id="@+id/tv_validity_period"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Jul 17, 2025 - Aug 16, 2025"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary"
+                android:drawableStart="@drawable/ic_calendar"
+                android:drawablePadding="8dp"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Minimum Order -->
+            <TextView
+                android:id="@+id/tv_min_order"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Min. Order: $100.00"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary"
+                android:drawableStart="@drawable/ic_money"
+                android:drawablePadding="8dp"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Usage Information -->
+            <TextView
+                android:id="@+id/tv_usage_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="5/50 used (45 remaining)"
+                android:textSize="13sp"
+                android:textColor="@color/text_secondary"
+                android:drawableStart="@drawable/ic_usage"
+                android:drawablePadding="8dp" />
+
+        </LinearLayout>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/btn_edit"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"
+                android:textSize="12sp"
+                android:layout_marginEnd="8dp"
+                app:icon="@drawable/ic_edit"
+                app:iconSize="16dp" />
+
+            <Button
+                android:id="@+id/btn_toggle_status"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Deactivate"
+                android:textSize="12sp"
+                android:layout_marginEnd="8dp"
+                app:icon="@drawable/ic_toggle"
+                app:iconSize="16dp" />
+
+            <Button
+                android:id="@+id/btn_delete"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete"
+                android:textSize="12sp"
+                android:backgroundTint="@color/error_color"
+                app:icon="@drawable/ic_delete"
+                app:iconSize="16dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

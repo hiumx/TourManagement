@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Beautiful Dark Theme Colors - Modern & Professional -->
+
+    <!-- Primary Colors for Dark Theme - Modern Blue/Purple Gradient -->
+    <color name="primary_color_dark">#6366F1</color>     <!-- Indigo 500 -->
+    <color name="primary_dark_dark">#4338CA</color>      <!-- Indigo 700 -->
+    <color name="primary_light_dark">#A5B4FC</color>     <!-- Indigo 300 -->
+
+    <!-- Accent Colors for Dark Theme - Vibrant Cyan -->
+    <color name="accent_color_dark">#06B6D4</color>      <!-- Cyan 500 -->
+    <color name="accent_dark_dark">#0891B2</color>       <!-- Cyan 600 -->
+    <color name="accent_light_dark">#67E8F9</color>      <!-- Cyan 300 -->
+
+    <!-- Background Colors for Dark Theme - True Dark with Subtle Variations -->
+    <color name="background_color_dark">#0F0F23</color>      <!-- Very dark blue-purple -->
+    <color name="light_background_dark">#1A1B3B</color>      <!-- Slightly lighter blue-purple -->
+    <color name="card_background_dark">#252657</color>        <!-- Card background with blue tint -->
+
+    <!-- Text Colors for Dark Theme - High Contrast -->
+    <color name="text_primary_dark">#F8FAFC</color>      <!-- Almost white -->
+    <color name="text_secondary_dark">#CBD5E1</color>    <!-- Light blue-gray -->
+    <color name="text_hint_dark">#64748B</color>         <!-- Medium blue-gray -->
+
+    <!-- Surface Colors for Dark Theme -->
+    <color name="surface_dark">#1E293B</color>           <!-- Slate 800 -->
+    <color name="on_surface_dark">#F1F5F9</color>        <!-- Slate 100 -->
+    <color name="divider_color_dark">#334155</color>     <!-- Slate 700 -->
+    <color name="border_color_dark">#475569</color>      <!-- Slate 600 -->
+
+    <!-- Status Colors - Vibrant and Beautiful -->
+    <color name="success_color_dark">#10B981</color>     <!-- Emerald 500 -->
+    <color name="error_color_dark">#EF4444</color>       <!-- Red 500 -->
+    <color name="warning_color_dark">#F59E0B</color>     <!-- Amber 500 -->
+    <color name="info_color_dark">#3B82F6</color>        <!-- Blue 500 -->
+
+    <!-- Button Colors for Dark Theme -->
+    <color name="button_primary_dark">#6366F1</color>    <!-- Indigo 500 -->
+    <color name="button_secondary_dark">#475569</color>  <!-- Slate 600 -->
+    <color name="button_danger_dark">#EF4444</color>     <!-- Red 500 -->
+    <color name="button_success_dark">#10B981</color>    <!-- Emerald 500 -->
+
+    <!-- Special Effect Colors -->
+    <color name="gradient_start_dark">#6366F1</color>    <!-- Indigo 500 -->
+    <color name="gradient_end_dark">#8B5CF6</color>      <!-- Violet 500 -->
+    <color name="shimmer_dark">#374151</color>           <!-- Gray 700 -->
+    <color name="overlay_dark">#1F2937CC</color>         <!-- Gray 800 with opacity -->
+</resources>
