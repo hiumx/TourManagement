@@ -14,7 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.tourmanagement.R;
+import com.example.tourmanagement.database.TourManagementDatabase;
 import com.example.tourmanagement.model.Tour;
+import com.example.tourmanagement.model.Discount;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -180,6 +182,9 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.TourViewHolder
         private ImageView ivTourImage;
         private TextView tvTourName, tvTourLocation, tvTourPrice, tvTourDate;
         private TextView tvAvailableSlots, tvDuration;
+        private TextView tvOriginalPrice, tvSavings;
+        private LinearLayout discountContainer, discountBanner;
+        private TextView tvBannerDiscount;
         private Button btnBookTour, btnEditTour, btnDeleteTour;
         private LinearLayout adminButtonsContainer;
 
@@ -199,6 +204,11 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.TourViewHolder
             tvTourDate = itemView.findViewById(R.id.tv_tour_date);
             tvAvailableSlots = itemView.findViewById(R.id.tv_available_slots);
             tvDuration = itemView.findViewById(R.id.tv_duration);
+            tvOriginalPrice = itemView.findViewById(R.id.tv_original_price);
+            tvSavings = itemView.findViewById(R.id.tv_savings);
+            discountContainer = itemView.findViewById(R.id.discount_container);
+            discountBanner = itemView.findViewById(R.id.discount_banner);
+            tvBannerDiscount = itemView.findViewById(R.id.tv_banner_discount);
             btnBookTour = itemView.findViewById(R.id.btn_book_tour);
             btnEditTour = itemView.findViewById(R.id.btn_edit_tour);
             btnDeleteTour = itemView.findViewById(R.id.btn_delete_tour);
@@ -258,8 +268,30 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.TourViewHolder
             // Set tour location
             tvTourLocation.setText(tour.getTourLocation());
 
-            // Set formatted price
-            tvTourPrice.setText(currencyFormatter.format(tour.getTourCost()));
+            // Get best discount for this tour
+            TourManagementDatabase database = TourManagementDatabase.getDatabase(context);
+            Discount bestDiscount = database.discountDao().getBestDiscountForTour(
+                tour.getId(),
+                tour.getTourCost(),
+                System.currentTimeMillis()
+            );
+
+            // Calculate final price with discount
+            double finalPrice = tour.getTourCost();
+            if (bestDiscount != null && bestDiscount.isValid()) {
+                finalPrice = bestDiscount.applyDiscount(tour.getTourCost());
+
+                // Show discount information
+                displayDiscountInfo(tour.getTourCost(), finalPrice, bestDiscount);
+            } else {
+                // Hide discount container if no discount
+                if (discountContainer != null) {
+                    discountContainer.setVisibility(View.GONE);
+                }
+            }
+
+            // Set formatted price (final price after discount)
+            tvTourPrice.setText(currencyFormatter.format(finalPrice));
 
             // Set formatted date
             Date tourDate = new Date(tour.getTourTime());
@@ -315,6 +347,65 @@ public class TourAdapter extends RecyclerView.Adapter<TourAdapter.TourViewHolder
                 adminButtonsContainer.setVisibility(View.VISIBLE);
             } else {
                 adminButtonsContainer.setVisibility(View.GONE);
+            }
+        }
+
+        /**
+         * Displays discount information beautifully in the tour item
+         *
+         * @param originalPrice Original tour price
+         * @param finalPrice Final price after discount
+         * @param discount The discount being applied
+         */
+        private void displayDiscountInfo(double originalPrice, double finalPrice, Discount discount) {
+            // Show discount banner on tour image
+            if (discountBanner != null && tvBannerDiscount != null) {
+                discountBanner.setVisibility(View.VISIBLE);
+
+                // Set banner text based on discount type
+                if (Discount.DiscountType.PERCENTAGE.equals(discount.getDiscountType())) {
+                    tvBannerDiscount.setText((int)discount.getDiscountValue() + "% OFF");
+                } else {
+                    tvBannerDiscount.setText("$" + (int)discount.getDiscountValue() + " OFF");
+                }
+
+                // Add banner animation
+                android.view.animation.Animation scaleIn = android.view.animation.AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
+                discountBanner.startAnimation(scaleIn);
+            }
+
+            if (discountContainer != null) {
+                discountContainer.setVisibility(View.VISIBLE);
+
+                // Show discount percentage or amount
+                TextView tvDiscountPercentage = discountContainer.findViewById(R.id.tv_discount_percentage);
+                if (tvDiscountPercentage != null) {
+                    if (Discount.DiscountType.PERCENTAGE.equals(discount.getDiscountType())) {
+                        tvDiscountPercentage.setText((int)discount.getDiscountValue() + "% OFF");
+                    } else {
+                        tvDiscountPercentage.setText("$" + (int)discount.getDiscountValue() + " OFF");
+                    }
+                }
+            }
+
+            // Show original price with strikethrough
+            if (tvOriginalPrice != null) {
+                tvOriginalPrice.setVisibility(View.VISIBLE);
+                tvOriginalPrice.setText(currencyFormatter.format(originalPrice));
+                tvOriginalPrice.setPaintFlags(tvOriginalPrice.getPaintFlags() | android.graphics.Paint.STRIKE_THRU_TEXT_FLAG);
+            }
+
+            // Show savings amount
+            if (tvSavings != null) {
+                double savings = originalPrice - finalPrice;
+                tvSavings.setVisibility(View.VISIBLE);
+                tvSavings.setText("You save " + currencyFormatter.format(savings) + "!");
+            }
+
+            // Add a subtle animation to draw attention to the discount
+            if (discountContainer != null) {
+                android.view.animation.Animation pulse = android.view.animation.AnimationUtils.loadAnimation(context, android.R.anim.fade_in);
+                discountContainer.startAnimation(pulse);
             }
         }
     }

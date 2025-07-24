@@ -9,9 +9,11 @@ import android.content.Context;
 import com.example.tourmanagement.dao.BookingDao;
 import com.example.tourmanagement.dao.TourDao;
 import com.example.tourmanagement.dao.UserDao;
+import com.example.tourmanagement.dao.DiscountDao;
 import com.example.tourmanagement.model.Booking;
 import com.example.tourmanagement.model.Tour;
 import com.example.tourmanagement.model.User;
+import com.example.tourmanagement.model.Discount;
 
 /**
  * Room Database class for the Tour Management application.
@@ -33,8 +35,8 @@ import com.example.tourmanagement.model.User;
  * @since 2025-07-22
  */
 @Database(
-    entities = {User.class, Tour.class, Booking.class},
-    version = 6,
+    entities = {User.class, Tour.class, Booking.class, Discount.class},
+    version = 7,
     exportSchema = false
 )
 public abstract class TourManagementDatabase extends RoomDatabase {
@@ -66,6 +68,12 @@ public abstract class TourManagementDatabase extends RoomDatabase {
      * @return BookingDao instance
      */
     public abstract BookingDao bookingDao();
+
+    /**
+     * Gets the DiscountDao for discount-related database operations
+     * @return DiscountDao instance
+     */
+    public abstract DiscountDao discountDao();
 
     /**
      * Migration from version 1 to 2: Add profileImagePath column to users table

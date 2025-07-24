@@ -72,6 +72,12 @@
             android:exported="false"
             android:parentActivityName=".activity.DashboardActivity" />
 
+        <!-- Add Tour Activity (Admin only) -->
+        <activity
+            android:name=".activity.AddTourActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
         <!-- Tour Details Activity -->
         <activity
             android:name=".activity.TourDetailsActivity"
@@ -114,23 +120,17 @@
             android:exported="false"
             android:parentActivityName=".activity.DashboardActivity" />
 
-        <!-- Add Edit User Activity (Admin only) -->
+        <!-- Discount Management Activity (Admin only) -->
         <activity
-            android:name=".activity.AddEditUserActivity"
-            android:exported="false"
-            android:parentActivityName=".activity.UserManagementActivity" />
-
-        <!-- User Details Activity (Admin only) -->
-        <activity
-            android:name=".activity.UserDetailsActivity"
-            android:exported="false"
-            android:parentActivityName=".activity.UserManagementActivity" />
-
-        <!-- Settings Activity -->
-        <activity
-            android:name=".activity.SettingsActivity"
+            android:name=".activity.DiscountManagementActivity"
             android:exported="false"
             android:parentActivityName=".activity.DashboardActivity" />
+
+        <!-- Add/Edit Discount Activity (Admin only) -->
+        <activity
+            android:name=".activity.AddEditDiscountActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DiscountManagementActivity" />
 
     </application>
 

@@ -19,6 +19,7 @@ import com.example.tourmanagement.database.TourManagementDatabase;
 import com.example.tourmanagement.model.Booking;
 import com.example.tourmanagement.model.Tour;
 import com.example.tourmanagement.model.User;
+import com.example.tourmanagement.model.Discount;
 import com.example.tourmanagement.utils.EmailService;
 
 import java.io.UnsupportedEncodingException;
@@ -290,12 +291,35 @@ public class BookTourActivity extends AppCompatActivity {
     }
 
     /**
-     * Calculates and displays the total cost
+     * Calculates and displays the total cost with discount applied
      */
     private void calculateTotalCost() {
         if (selectedTour != null) {
-            totalCost = selectedTour.getTourCost() * numberOfPeople;
-            tvTotalCost.setText("Total Cost: " + currencyFormatter.format(totalCost));
+            double originalPrice = selectedTour.getTourCost() * numberOfPeople;
+
+            // Get best available discount for this tour
+            Discount bestDiscount = database.discountDao().getBestDiscountForTour(
+                selectedTour.getId(),
+                originalPrice,
+                System.currentTimeMillis()
+            );
+
+            if (bestDiscount != null && bestDiscount.isValid()) {
+                // Apply discount
+                totalCost = bestDiscount.applyDiscount(originalPrice);
+
+                // Show discount information
+                double savings = originalPrice - totalCost;
+                String costText = "Original: " + currencyFormatter.format(originalPrice) + "\n" +
+                                "Discount: " + bestDiscount.getDiscountName() + "\n" +
+                                "You save: " + currencyFormatter.format(savings) + "\n" +
+                                "Total: " + currencyFormatter.format(totalCost);
+                tvTotalCost.setText(costText);
+            } else {
+                // No discount available
+                totalCost = originalPrice;
+                tvTotalCost.setText("Total Cost: " + currencyFormatter.format(totalCost));
+            }
         }
     }
 

@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,21 +29,26 @@ import java.util.List;
 public class DashboardActivity extends AppCompatActivity implements TourAdapter.OnTourClickListener {
 
     /**
-     * UI components - Enhanced with new modern elements
+     * UI components - Enhanced with new modern elements and discount suggestions
      */
     private TextView tvWelcome;
     private TextView tvTotalTours;
     private TextView tvUserBookings;
     private TextView tvSearchHint;
     private TextView tvViewAll;
+    private TextView tvViewAllDiscounts;
+    private TextView tvNoDiscountsAvailable;
     private RecyclerView recyclerViewTours;
+    private RecyclerView recyclerDiscountSuggestions;
     private ExtendedFloatingActionButton fabAddTour;
     private MaterialCardView searchCard;
+    private LinearLayout discountSuggestionsSection;
 
     /**
-     * Adapter for tour listings
+     * Adapters for tour listings and discount suggestions
      */
     private TourAdapter tourAdapter;
+    private com.example.tourmanagement.adapter.DiscountSuggestionAdapter discountSuggestionAdapter;
 
     /**
      * Database and user session management
@@ -93,11 +99,17 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
         // Load dashboard statistics
         loadDashboardStats();
 
+        // Load discount suggestions for users
+        loadDiscountSuggestions();
+
         // Initialize custom sliding popup menu
         initializeSlidingMenu();
 
         // Update admin menu visibility after menu is initialized
         updateAdminMenuVisibility();
+
+        // Populate sample discount data (will only run once)
+        com.example.tourmanagement.utils.DiscountDataPopulator.populateSampleDiscounts(this);
     }
 
     /**
@@ -153,7 +165,11 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
         tvUserBookings = findViewById(R.id.tv_user_bookings);
         tvSearchHint = findViewById(R.id.tv_search_hint);
         tvViewAll = findViewById(R.id.tv_view_all);
+//        tvViewAllDiscounts = findViewById(R.id.tv_view_all_discounts);
+        tvNoDiscountsAvailable = findViewById(R.id.tv_no_discounts_available);
         searchCard = findViewById(R.id.search_card);
+        recyclerDiscountSuggestions = findViewById(R.id.recycler_discount_suggestions);
+        discountSuggestionsSection = findViewById(R.id.discount_suggestions_section);
 
         // Set welcome message with enhanced styling
         if (currentUser != null) {
@@ -185,6 +201,11 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
         recyclerViewTours.setLayoutManager(new LinearLayoutManager(this));
         tourAdapter = new TourAdapter(this, this);
         recyclerViewTours.setAdapter(tourAdapter);
+
+        // Setup RecyclerView for discount suggestions
+        recyclerDiscountSuggestions.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        discountSuggestionAdapter = new com.example.tourmanagement.adapter.DiscountSuggestionAdapter(this);
+        recyclerDiscountSuggestions.setAdapter(discountSuggestionAdapter);
     }
 
     /**
@@ -216,6 +237,36 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
     }
 
     /**
+     * Loads discount suggestions for the user
+     */
+    private void loadDiscountSuggestions() {
+        try {
+            if (currentUser != null) {
+                // Load discount suggestions for the user
+                List<com.example.tourmanagement.model.Discount> discounts = database.discountDao().getActiveDiscounts();
+
+                // For admin, show all discounts
+                if (isCurrentUserAdmin()) {
+                    discounts = database.discountDao().getAllDiscounts();
+                }
+
+                discountSuggestionAdapter.updateDiscounts(discounts);
+
+                // Show/hide discount suggestions section
+                if (discounts.isEmpty()) {
+                    discountSuggestionsSection.setVisibility(View.GONE);
+                    tvNoDiscountsAvailable.setVisibility(View.VISIBLE);
+                } else {
+                    discountSuggestionsSection.setVisibility(View.VISIBLE);
+                    tvNoDiscountsAvailable.setVisibility(View.GONE);
+                }
+            }
+        } catch (Exception e) {
+            showToast("Error loading discounts: " + e.getMessage());
+        }
+    }
+
+    /**
      * Enhanced event listeners for new UI components
      */
     private void setupEventListeners() {
@@ -241,6 +292,12 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
             intent.putExtra("show_all", true);
             startActivity(intent);
         });
+
+//        // View all discounts click listener
+//        tvViewAllDiscounts.setOnClickListener(v -> {
+//            Intent intent = new Intent(DashboardActivity.this, DiscountManagementActivity.class);
+//            startActivity(intent);
+//        });
 
         // Filter icon click listener (placeholder for future filter functionality)
         findViewById(R.id.iv_filter).setOnClickListener(v -> {
@@ -324,6 +381,16 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
             public void onBookingManagementClick() {
                 if (isCurrentUserAdmin()) {
                     Intent intent = new Intent(DashboardActivity.this, BookingManagementActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(DashboardActivity.this, "Admin access required", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onDiscountManagementClick() {
+                if (isCurrentUserAdmin()) {
+                    Intent intent = new Intent(DashboardActivity.this, DiscountManagementActivity.class);
                     startActivity(intent);
                 } else {
                     Toast.makeText(DashboardActivity.this, "Admin access required", Toast.LENGTH_SHORT).show();

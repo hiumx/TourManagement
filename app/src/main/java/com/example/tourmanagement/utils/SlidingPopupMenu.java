@@ -24,6 +24,7 @@ public class SlidingPopupMenu {
         void onUserManagementClick(); // New admin feature
         void onRevenueManagementClick(); // New admin feature
         void onBookingManagementClick(); // New admin feature for booking approval
+        void onDiscountManagementClick(); // New admin feature for discount management
         void onLogoutClick();
     }
 
@@ -67,6 +68,7 @@ public class SlidingPopupMenu {
         LinearLayout menuUserManagement = popupView.findViewById(R.id.menu_user_management); // New admin menu
         LinearLayout menuRevenueManagement = popupView.findViewById(R.id.menu_revenue_management); // New admin menu
         LinearLayout menuBookingManagement = popupView.findViewById(R.id.menu_booking_management); // New admin menu
+        LinearLayout menuDiscountManagement = popupView.findViewById(R.id.menu_discount_management); // New admin menu
         LinearLayout menuLogout = popupView.findViewById(R.id.menu_logout);
 
         menuProfile.setOnClickListener(v -> {
@@ -97,6 +99,11 @@ public class SlidingPopupMenu {
         menuBookingManagement.setOnClickListener(v -> {
             dismissWithDelay();
             if (listener != null) listener.onBookingManagementClick();
+        });
+
+        menuDiscountManagement.setOnClickListener(v -> {
+            dismissWithDelay();
+            if (listener != null) listener.onDiscountManagementClick();
         });
 
         menuLogout.setOnClickListener(v -> {
@@ -157,10 +164,12 @@ public class SlidingPopupMenu {
         LinearLayout menuUserManagement = popupView.findViewById(R.id.menu_user_management);
         LinearLayout menuRevenueManagement = popupView.findViewById(R.id.menu_revenue_management);
         LinearLayout menuBookingManagement = popupView.findViewById(R.id.menu_booking_management);
+        LinearLayout menuDiscountManagement = popupView.findViewById(R.id.menu_discount_management);
 
         int visibility = isAdmin ? View.VISIBLE : View.GONE;
         menuUserManagement.setVisibility(visibility);
         menuRevenueManagement.setVisibility(visibility);
         menuBookingManagement.setVisibility(visibility);
+        menuDiscountManagement.setVisibility(visibility);
     }
 }

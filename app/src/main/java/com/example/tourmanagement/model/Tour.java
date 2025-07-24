@@ -300,3 +300,4 @@ public class Tour {
         return tourCost * numberOfPeople;
     }
 }
+

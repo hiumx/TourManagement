@@ -19,53 +19,53 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@drawable/toolbar_gradient_background"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:layout_scrollFlags="scroll|enterAlways"
-            app:titleTextColor="@android:color/white"
-            app:subtitleTextColor="@color/primary_light" />
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:subtitleTextColor="@color/primary_light"
+            app:titleTextColor="@android:color/white" />
 
         <!-- Enhanced Welcome Section with Cards -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/welcome_section_background"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:background="@drawable/welcome_section_background">
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/tv_welcome"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Welcome!"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
+                android:fontFamily="sans-serif-medium"
                 android:gravity="center"
-                android:fontFamily="sans-serif-medium" />
+                android:text="Welcome!"
+                android:textColor="@android:color/white"
+                android:textSize="24sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Discover amazing tours and destinations"
-                android:textSize="16sp"
-                android:textColor="@color/primary_light"
-                android:gravity="center"
                 android:layout_marginTop="4dp"
-                android:fontFamily="sans-serif-light" />
+                android:fontFamily="sans-serif-light"
+                android:gravity="center"
+                android:text="Discover amazing tours and destinations"
+                android:textColor="@color/primary_light"
+                android:textSize="16sp" />
 
             <!-- Quick Stats Cards -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:layout_marginTop="16dp"
+                android:orientation="horizontal"
                 android:weightSum="2">
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
                     app:cardBackgroundColor="@color/card_background"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="4dp">
@@ -73,25 +73,25 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:orientation="vertical"
-                        android:padding="12dp"
-                        android:gravity="center">
+                        android:padding="12dp">
 
                         <TextView
                             android:id="@+id/tv_total_tours"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
+                            android:textColor="@color/primary_color"
                             android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/primary_color" />
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Available Tours"
-                            android:textSize="12sp"
-                            android:textColor="@color/text_secondary" />
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
@@ -100,8 +100,8 @@
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginStart="8dp"
+                    android:layout_weight="1"
                     app:cardBackgroundColor="@color/card_background"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="4dp">
@@ -109,25 +109,25 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:orientation="vertical"
-                        android:padding="12dp"
-                        android:gravity="center">
+                        android:padding="12dp">
 
                         <TextView
                             android:id="@+id/tv_user_bookings"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="0"
+                            android:textColor="@color/accent_color"
                             android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/accent_color" />
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="My Bookings"
-                            android:textSize="12sp"
-                            android:textColor="@color/text_secondary" />
+                            android:textColor="@color/text_secondary"
+                            android:textSize="12sp" />
 
                     </LinearLayout>
 
@@ -164,76 +164,150 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal"
-                    android:padding="12dp"
-                    android:gravity="center_vertical">
+                    android:padding="12dp">
 
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
+                        android:layout_marginStart="8dp"
                         android:src="@drawable/ic_search"
-                        android:tint="@color/primary_color"
-                        android:layout_marginStart="8dp" />
+                        android:tint="@color/primary_color" />
 
                     <TextView
                         android:id="@+id/tv_search_hint"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="Search tours, destinations..."
-                        android:textColor="@color/text_hint"
-                        android:textSize="16sp"
-                        android:padding="12dp"
+                        android:background="?attr/selectableItemBackground"
                         android:clickable="true"
                         android:focusable="true"
-                        android:background="?attr/selectableItemBackground" />
+                        android:padding="12dp"
+                        android:text="Search tours, destinations..."
+                        android:textColor="@color/text_hint"
+                        android:textSize="16sp" />
 
                     <ImageView
                         android:id="@+id/iv_filter"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:src="@drawable/ic_filter"
-                        android:tint="@color/text_secondary"
                         android:layout_marginEnd="8dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
                         android:clickable="true"
                         android:focusable="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:padding="4dp" />
+                        android:padding="4dp"
+                        android:src="@drawable/ic_filter"
+                        android:tint="@color/text_secondary" />
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- 🎁 Discount Suggestions Section -->
+            <LinearLayout
+                android:id="@+id/discount_suggestions_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <!-- Discount Section Header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_marginEnd="8dp"
+                        android:contentDescription="Discount icon"
+                        android:src="@android:drawable/ic_menu_sort_by_size"
+                        android:tint="@color/primary_color" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🎁 Special Offers for You"
+                        android:textColor="@color/text_primary"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <!--                    <TextView-->
+                    <!--                        android:id="@+id/tv_view_all_discounts"-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="wrap_content"-->
+                    <!--                        android:text="View All"-->
+                    <!--                        android:textColor="@color/primary_color"-->
+                    <!--                        android:textSize="14sp"-->
+                    <!--                        android:textStyle="bold"-->
+                    <!--                        android:padding="8dp"-->
+                    <!--                        android:clickable="true"-->
+                    <!--                        android:focusable="true"-->
+                    <!--                        android:background="?attr/selectableItemBackgroundBorderless" />-->
+
+                </LinearLayout>
+
+                <!-- Discount Suggestions RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_discount_suggestions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp" />
+
+                <!-- No Discounts Message -->
+                <TextView
+                    android:id="@+id/tv_no_discounts_available"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="8dp"
+                    android:gravity="center"
+                    android:padding="24dp"
+                    android:text="🎊 No active discounts right now, but check back soon for amazing deals!"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+
+            </LinearLayout>
+
             <!-- Section Title with Action -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
+                android:layout_marginBottom="16dp"
                 android:gravity="center_vertical"
-                android:layout_marginBottom="16dp">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Featured Tours"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Tours"
                     android:textColor="@color/text_primary"
-                    android:fontFamily="sans-serif-medium" />
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tv_view_all"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:padding="8dp"
                     android:text="View All"
                     android:textColor="@color/primary_color"
                     android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackground"
-                    android:padding="8dp" />
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
@@ -242,9 +316,11 @@
                 android:id="@+id/recycler_view_tours"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false"
                 android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
                 android:paddingBottom="16dp" />
+
+
 
         </LinearLayout>
 
@@ -259,11 +335,11 @@
         android:layout_margin="16dp"
         android:text="Add Tour"
         android:textColor="@android:color/white"
-        app:icon="@drawable/ic_add"
-        app:iconTint="@android:color/white"
+        android:visibility="gone"
         app:backgroundTint="@color/primary_color"
         app:elevation="8dp"
         app:fabSize="normal"
-        android:visibility="gone" />
+        app:icon="@drawable/ic_add"
+        app:iconTint="@android:color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -13,12 +13,80 @@
         android:orientation="vertical">
 
         <!-- Tour Image -->
-        <ImageView
-            android:id="@+id/iv_tour_image"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/placeholder_tour" />
+            android:layout_height="200dp">
+
+            <ImageView
+                android:id="@+id/iv_tour_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/placeholder_tour"
+                android:contentDescription="Tour image" />
+
+            <!-- Discount Banner (Top Right Corner) - Enhanced Design -->
+            <LinearLayout
+                android:id="@+id/discount_banner"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|end"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/discount_banner_background"
+                android:orientation="horizontal"
+                android:paddingStart="10dp"
+                android:paddingTop="6dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="6dp"
+                android:visibility="visible"
+                android:elevation="6dp"
+                android:translationZ="6dp">
+
+                <!-- Discount Icon -->
+                <ImageView
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:src="@drawable/ic_percent"
+                    app:tint="@android:color/white"
+                    android:layout_marginEnd="4dp"
+                    android:layout_gravity="center_vertical"
+                    android:contentDescription="Discount icon" />
+
+                <!-- Discount Percentage Text -->
+                <TextView
+                    android:id="@+id/tv_banner_discount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="20% OFF"
+                    android:textColor="@android:color/white"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.1"
+                    android:layout_gravity="center_vertical"
+                    android:fontFamily="sans-serif-medium" />
+
+            </LinearLayout>
+
+            <!-- Hot Deal Badge (Alternative position for special offers) -->
+            <TextView
+                android:id="@+id/tv_hot_deal_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|start"
+                android:layout_margin="8dp"
+                android:background="@drawable/discount_value_badge"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="4dp"
+                android:text="HOT DEAL"
+                android:textColor="@android:color/white"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                android:elevation="4dp"
+                android:fontFamily="sans-serif-medium" />
+
+        </FrameLayout>
 
         <!-- Tour Information -->
         <LinearLayout
@@ -83,16 +151,77 @@
                 android:layout_marginTop="12dp"
                 android:gravity="center_vertical">
 
-                <!-- Price -->
-                <TextView
-                    android:id="@+id/tv_tour_price"
+                <!-- Price Section -->
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="$0.00"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/primary_color" />
+                    android:orientation="vertical">
+
+                    <!-- Discount Container -->
+                    <LinearLayout
+                        android:id="@+id/discount_container"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:visibility="gone"
+                        android:background="@drawable/discount_badge_background"
+                        android:padding="6dp"
+                        android:layout_marginBottom="4dp">
+
+                        <ImageView
+                            android:layout_width="16dp"
+                            android:layout_height="16dp"
+                            android:src="@android:drawable/ic_menu_sort_by_size"
+                            app:tint="@android:color/white"
+                            android:layout_marginEnd="4dp"
+                            android:contentDescription="Discount icon" />
+
+                        <TextView
+                            android:id="@+id/tv_discount_percentage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="20% OFF"
+                            android:textColor="@android:color/white"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Original Price (Strikethrough) -->
+                    <TextView
+                        android:id="@+id/tv_original_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$250.00"
+                        android:textSize="14sp"
+                        android:textColor="@color/text_secondary"
+                        android:visibility="gone" />
+
+                    <!-- Current/Discounted Price -->
+                    <TextView
+                        android:id="@+id/tv_tour_price"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="$200.00"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary_color" />
+
+                    <!-- Savings Text -->
+                    <TextView
+                        android:id="@+id/tv_savings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="You save $50.00!"
+                        android:textSize="12sp"
+                        android:textColor="@color/success_color"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        android:layout_marginTop="2dp" />
+
+                </LinearLayout>
 
                 <!-- Available Slots -->
                 <TextView
