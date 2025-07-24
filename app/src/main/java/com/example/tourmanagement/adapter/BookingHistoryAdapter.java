@@ -327,18 +327,26 @@ public class BookingHistoryAdapter extends RecyclerView.Adapter<BookingHistoryAd
                 btnViewTicket.setVisibility(View.GONE);
             }
 
-            // Configure Cancel button
+            // Configure Cancel button - Updated logic for 24-hour cancellation
             if ("PENDING".equals(bookingStatus)) {
                 btnCancelBooking.setVisibility(View.VISIBLE);
                 btnCancelBooking.setEnabled(true);
                 btnCancelBooking.setText("Cancel");
                 btnCancelBooking.setBackgroundColor(context.getResources().getColor(R.color.error_color));
+            } else if ("CONFIRMED".equals(bookingStatus) && booking.canBeCancelledWithin24Hours()) {
+                // Allow cancellation of confirmed bookings within 24 hours
+                btnCancelBooking.setVisibility(View.VISIBLE);
+                btnCancelBooking.setEnabled(true);
+                long remainingHours = booking.getRemainingCancellationHours();
+                btnCancelBooking.setText("Cancel (" + remainingHours + "h left)");
+                btnCancelBooking.setBackgroundColor(context.getResources().getColor(R.color.warning_color));
             } else if ("CANCELLED".equals(bookingStatus)) {
                 btnCancelBooking.setVisibility(View.VISIBLE);
                 btnCancelBooking.setEnabled(false);
                 btnCancelBooking.setText("Cancelled");
                 btnCancelBooking.setBackgroundColor(context.getResources().getColor(R.color.disabled_color));
             } else {
+                // Hide cancel button for confirmed bookings after 24 hours
                 btnCancelBooking.setVisibility(View.GONE);
             }
         }

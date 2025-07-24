@@ -23,6 +23,7 @@ public class SlidingPopupMenu {
         void onSettingsClick();
         void onUserManagementClick(); // New admin feature
         void onRevenueManagementClick(); // New admin feature
+        void onBookingManagementClick(); // New admin feature for booking approval
         void onLogoutClick();
     }
 
@@ -65,6 +66,7 @@ public class SlidingPopupMenu {
         LinearLayout menuSettings = popupView.findViewById(R.id.menu_settings);
         LinearLayout menuUserManagement = popupView.findViewById(R.id.menu_user_management); // New admin menu
         LinearLayout menuRevenueManagement = popupView.findViewById(R.id.menu_revenue_management); // New admin menu
+        LinearLayout menuBookingManagement = popupView.findViewById(R.id.menu_booking_management); // New admin menu
         LinearLayout menuLogout = popupView.findViewById(R.id.menu_logout);
 
         menuProfile.setOnClickListener(v -> {
@@ -90,6 +92,11 @@ public class SlidingPopupMenu {
         menuRevenueManagement.setOnClickListener(v -> {
             dismissWithDelay();
             if (listener != null) listener.onRevenueManagementClick();
+        });
+
+        menuBookingManagement.setOnClickListener(v -> {
+            dismissWithDelay();
+            if (listener != null) listener.onBookingManagementClick();
         });
 
         menuLogout.setOnClickListener(v -> {
@@ -149,9 +156,11 @@ public class SlidingPopupMenu {
     public void setAdminMenuVisibility(boolean isAdmin) {
         LinearLayout menuUserManagement = popupView.findViewById(R.id.menu_user_management);
         LinearLayout menuRevenueManagement = popupView.findViewById(R.id.menu_revenue_management);
+        LinearLayout menuBookingManagement = popupView.findViewById(R.id.menu_booking_management);
 
         int visibility = isAdmin ? View.VISIBLE : View.GONE;
         menuUserManagement.setVisibility(visibility);
         menuRevenueManagement.setVisibility(visibility);
+        menuBookingManagement.setVisibility(visibility);
     }
 }

@@ -447,4 +447,243 @@ public class EmailService {
                 "</body>" +
                 "</html>";
     }
+
+    /**
+     * Sends booking cancellation confirmation email
+     *
+     * @param user User who cancelled the booking
+     * @param tour Tour that was cancelled
+     * @param booking Cancelled booking details
+     * @param callback Callback for success/failure handling
+     */
+    public static void sendBookingCancellationEmail(User user, Tour tour, Booking booking, EmailCallback callback) {
+        new SendCancellationEmailTask(user, tour, booking, callback).execute();
+    }
+
+    /**
+     * AsyncTask for sending booking cancellation emails in background thread
+     */
+    private static class SendCancellationEmailTask extends AsyncTask<Void, Void, Boolean> {
+        private User user;
+        private Tour tour;
+        private Booking booking;
+        private EmailCallback callback;
+        private String errorMessage;
+
+        public SendCancellationEmailTask(User user, Tour tour, Booking booking, EmailCallback callback) {
+            this.user = user;
+            this.tour = tour;
+            this.booking = booking;
+            this.callback = callback;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... voids) {
+            try {
+                // Create properties for SMTP configuration
+                Properties props = new Properties();
+                props.put("mail.smtp.auth", "true");
+                props.put("mail.smtp.starttls.enable", "true");
+                props.put("mail.smtp.starttls.required", "true");
+                props.put("mail.smtp.host", SMTP_HOST);
+                props.put("mail.smtp.port", SMTP_PORT);
+                props.put("mail.smtp.ssl.protocols", "TLSv1.2");
+                props.put("mail.smtp.ssl.trust", SMTP_HOST);
+
+                // Create authenticator
+                Authenticator authenticator = new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(EMAIL_FROM, EMAIL_PASSWORD);
+                    }
+                };
+
+                // Create session
+                Session session = Session.getInstance(props, authenticator);
+
+                // Create message
+                Message message = new MimeMessage(session);
+                message.setFrom(new InternetAddress(EMAIL_FROM));
+                message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(user.getEmail()));
+                message.setSubject("Tour Management - Booking Cancellation Confirmation");
+
+                // Create email content for cancellation
+                String emailContent = createBookingCancellationEmailContent(user, tour, booking);
+                message.setContent(emailContent, "text/html; charset=utf-8");
+
+                // Send email
+                Transport.send(message);
+
+                Log.d(TAG, "Booking cancellation email sent successfully to: " + user.getEmail());
+                return true;
+
+            } catch (MessagingException e) {
+                Log.e(TAG, "Failed to send booking cancellation email", e);
+                errorMessage = "Failed to send email: " + e.getMessage();
+                return false;
+            } catch (Exception e) {
+                Log.e(TAG, "Unexpected error while sending booking cancellation email", e);
+                errorMessage = "Unexpected error: " + e.getMessage();
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (callback != null) {
+                if (success) {
+                    callback.onSuccess();
+                } else {
+                    callback.onFailure(errorMessage != null ? errorMessage : "Unknown error occurred");
+                }
+            }
+        }
+    }
+
+    /**
+     * Creates HTML email content for booking cancellation confirmation
+     *
+     * @param user User who cancelled the booking
+     * @param tour Tour that was cancelled
+     * @param booking Cancelled booking details
+     * @return HTML email content for cancellation confirmation
+     */
+    private static String createBookingCancellationEmailContent(User user, Tour tour, Booking booking) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy 'at' HH:mm", Locale.getDefault());
+        SimpleDateFormat tourDateFormat = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
+
+        String bookingDate = dateFormat.format(new Date(booking.getBookingDate()));
+        String cancellationDate = dateFormat.format(new Date());
+        String tourDate = tourDateFormat.format(new Date(tour.getTourTime()));
+
+        // Generate booking reference number
+        String bookingReference = "TM" + String.format("%06d", booking.getId());
+
+        // Determine if refund applies
+        boolean isRefundApplicable = "REFUNDED".equals(booking.getPaymentStatus()) || "PAID".equals(booking.getPaymentStatus());
+
+        return "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "    <meta charset='UTF-8'>" +
+                "    <title>Booking Cancellation - Tour Management</title>" +
+                "</head>" +
+                "<body style='font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0;'>" +
+                "    <div style='max-width: 650px; margin: 0 auto; background-color: #ffffff;'>" +
+                "        <!-- Header -->" +
+                "        <div style='background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); color: white; padding: 30px 20px; text-align: center;'>" +
+                "            <h1 style='margin: 0; font-size: 28px; font-weight: bold;'>🎫 Tour Management</h1>" +
+                "            <h2 style='margin: 10px 0 0 0; font-size: 20px; font-weight: normal;'>Booking Cancellation Confirmation</h2>" +
+                "        </div>" +
+
+                "        <!-- Cancellation Status -->" +
+                "        <div style='background-color: #ffebee; border-left: 5px solid #f44336; padding: 20px; margin: 0;'>" +
+                "            <div style='display: flex; align-items: center; justify-content: center;'>" +
+                "                <span style='font-size: 24px; color: #f44336; margin-right: 10px;'>❌</span>" +
+                "                <h3 style='margin: 0; color: #c62828; font-size: 18px;'>Booking Successfully Cancelled</h3>" +
+                "            </div>" +
+                "        </div>" +
+
+                "        <!-- Main Content -->" +
+                "        <div style='padding: 30px 20px;'>" +
+                "            <p style='font-size: 16px; margin-bottom: 20px;'>Dear " + user.getFullName() + ",</p>" +
+                "            <p style='font-size: 14px; margin-bottom: 25px;'>We have successfully processed your booking cancellation request. Below are the details of your cancelled booking:</p>" +
+
+                "            <!-- Cancelled Booking Information -->" +
+                "            <div style='background-color: #f8f9fa; border: 2px solid #f44336; border-radius: 10px; padding: 25px; margin: 25px 0;'>" +
+                "                <div style='text-align: center; margin-bottom: 20px;'>" +
+                "                    <h2 style='color: #f44336; margin: 0; font-size: 22px;'>📋 CANCELLED BOOKING</h2>" +
+                "                    <p style='margin: 5px 0; font-size: 16px; font-weight: bold; color: #333;'>Booking Reference: " + bookingReference + "</p>" +
+                "                </div>" +
+
+                "                <!-- Booking Details -->" +
+                "                <table style='width: 100%; border-collapse: collapse; margin-top: 20px;'>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555; width: 35%;'>Tour Name:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #333;'>" + tour.getTourName() + "</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Destination:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #333;'>" + tour.getTourLocation() + "</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Tour Date:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #333;'>" + tourDate + "</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Duration:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #333;'>" + tour.getDuration() + " days</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Number of People:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #333;'>" + booking.getNumberOfPeople() + " person(s)</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Total Amount:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #f44336; font-weight: bold; font-size: 16px;'>$" + String.format("%.2f", booking.getTotalAmount()) + "</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Original Booking Date:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #333;'>" + bookingDate + "</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Cancellation Date:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; color: #333;'>" + cancellationDate + "</td>" +
+                "                    </tr>" +
+                "                    <tr>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0; font-weight: bold; color: #555;'>Status:</td>" +
+                "                        <td style='padding: 10px 0; border-bottom: 1px solid #e0e0e0;'>" +
+                "                            <span style='background-color: #f44336; color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px; font-weight: bold;'>CANCELLED</span>" +
+                "                        </td>" +
+                "                    </tr>" +
+                "                </table>" +
+                "            </div>" +
+
+                // Refund Information
+                (isRefundApplicable ?
+                "            <div style='background-color: #e8f5e8; border-radius: 8px; padding: 20px; margin: 25px 0; border-left: 4px solid #4CAF50;'>" +
+                "                <h3 style='color: #2e7d32; margin: 0 0 15px 0; font-size: 18px;'>💳 Refund Information</h3>" +
+                "                <p style='margin: 0 0 10px 0; color: #333;'>Your refund is being processed and will be credited back to your original payment method within 5-7 business days.</p>" +
+                "                <p style='margin: 0; color: #333; font-weight: bold;'>Refund Amount: $" + String.format("%.2f", booking.getTotalAmount()) + "</p>" +
+                "            </div>" :
+                "            <div style='background-color: #fff3cd; border-radius: 8px; padding: 20px; margin: 25px 0; border-left: 4px solid #ffc107;'>" +
+                "                <h3 style='color: #856404; margin: 0 0 15px 0; font-size: 18px;'>💳 Payment Information</h3>" +
+                "                <p style='margin: 0; color: #856404;'>Since no payment was processed for this booking, no refund is required.</p>" +
+                "            </div>") +
+
+                "            <!-- Important Information -->" +
+                "            <div style='background-color: #e3f2fd; border-radius: 8px; padding: 20px; margin: 25px 0;'>" +
+                "                <h3 style='color: #1565c0; margin: 0 0 15px 0; font-size: 18px;'>📋 Important Notes</h3>" +
+                "                <ul style='margin: 0; padding-left: 20px; color: #333;'>" +
+                "                    <li style='margin-bottom: 8px;'>Your booking has been completely cancelled and removed from our system</li>" +
+                "                    <li style='margin-bottom: 8px;'>You will not be charged any cancellation fees</li>" +
+                "                    <li style='margin-bottom: 8px;'>Your seat(s) have been released and are now available for other customers</li>" +
+                "                    <li style='margin-bottom: 8px;'>If you wish to book this or another tour in the future, you'll need to make a new booking</li>" +
+                "                    <li style='margin-bottom: 8px;'>Save this email as confirmation of your cancellation</li>" +
+                "                </ul>" +
+                "            </div>" +
+
+                "            <!-- Contact Information -->" +
+                "            <div style='background-color: #f5f5f5; border-radius: 8px; padding: 20px; margin: 25px 0;'>" +
+                "                <h3 style='color: #333; margin: 0 0 15px 0; font-size: 18px;'>📞 Need Help?</h3>" +
+                "                <p style='margin: 0 0 10px 0; color: #555;'>If you have any questions about this cancellation or need assistance with future bookings:</p>" +
+                "                <p style='margin: 5px 0; color: #555;'><strong>Email:</strong> support@tourmanagement.com</p>" +
+                "                <p style='margin: 5px 0; color: #555;'><strong>Phone:</strong> +1 (555) 123-4567</p>" +
+                "                <p style='margin: 5px 0; color: #555;'><strong>Support Hours:</strong> 9:00 AM - 6:00 PM (Mon-Fri)</p>" +
+                "            </div>" +
+
+                "            <p style='font-size: 14px; color: #666; margin-top: 30px;'>We're sorry to see you cancel your booking. We hope to serve you again in the future with amazing travel experiences!</p>" +
+                "            <p style='font-size: 14px; color: #333; margin-top: 20px;'>Best regards,<br><strong>Tour Management Team</strong></p>" +
+                "        </div>" +
+
+                "        <!-- Footer -->" +
+                "        <div style='background-color: #333; color: #ccc; padding: 20px; text-align: center; font-size: 12px;'>" +
+                "            <p style='margin: 0 0 10px 0;'>This is an automated cancellation confirmation email. Please do not reply to this email.</p>" +
+                "            <p style='margin: 0;'>&copy; 2025 Tour Management System. All rights reserved.</p>" +
+                "            <p style='margin: 10px 0 0 0;'>Thank you for choosing Tour Management!</p>" +
+                "        </div>" +
+                "    </div>" +
+                "</body>" +
+                "</html>";
+    }
 }

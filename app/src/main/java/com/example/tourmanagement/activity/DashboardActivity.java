@@ -193,10 +193,22 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
     private void loadTours() {
         try {
             List<Tour> tours = database.tourDao().getActiveTours();
+
+            // Filter out tours with 0 available slots for regular users
+            // Admin users can see all tours for management purposes
+            if (!isCurrentUserAdmin()) {
+                tours = tours.stream()
+                    .filter(tour -> tour.getAvailableSlots() > 0)
+                    .collect(java.util.stream.Collectors.toList());
+            }
+
             tourAdapter.updateTours(tours);
 
             if (tours.isEmpty()) {
-                showToast("No tours available at the moment");
+                String message = isCurrentUserAdmin() ?
+                    "No tours available at the moment" :
+                    "No tours with available slots at the moment";
+                showToast(message);
             }
         } catch (Exception e) {
             showToast("Error loading tours: " + e.getMessage());
@@ -302,6 +314,16 @@ public class DashboardActivity extends AppCompatActivity implements TourAdapter.
             public void onRevenueManagementClick() {
                 if (isCurrentUserAdmin()) {
                     Intent intent = new Intent(DashboardActivity.this, RevenueManagementActivity.class);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(DashboardActivity.this, "Admin access required", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onBookingManagementClick() {
+                if (isCurrentUserAdmin()) {
+                    Intent intent = new Intent(DashboardActivity.this, BookingManagementActivity.class);
                     startActivity(intent);
                 } else {
                     Toast.makeText(DashboardActivity.this, "Admin access required", Toast.LENGTH_SHORT).show();

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_color">
+
+    <!-- Toolbar -->
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/primary_color"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    <!-- Statistics Cards -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:weightSum="3">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/card_background"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:layout_marginEnd="8dp">
+
+            <TextView
+                android:id="@+id/tv_pending_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pending: 0"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/warning_color" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/card_background"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:layout_marginHorizontal="4dp">
+
+            <TextView
+                android:id="@+id/tv_confirmed_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirmed: 0"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/success_color" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/card_background"
+            android:orientation="vertical"
+            android:padding="12dp"
+            android:layout_marginStart="8dp">
+
+            <TextView
+                android:id="@+id/tv_cancelled_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cancelled: 0"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/error_color" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Filter Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:paddingTop="0dp">
+
+        <Button
+            android:id="@+id/btn_filter_all"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_outline"
+            android:minHeight="48dp"
+            android:padding="4dp"
+            android:text="All"
+            android:textColor="@color/text_white"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btn_filter_pending"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="2dp"
+            android:layout_marginBottom="16dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_outline"
+            android:minHeight="48dp"
+            android:text="Pending"
+            android:padding="4dp"
+            android:textColor="@color/text_white"
+            android:textSize="12sp" />
+
+        <Button
+            android:id="@+id/btn_filter_confirmed"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="2dp"
+            android:text="Confirmed"
+            android:textSize="12sp"
+            android:padding="4dp"
+            android:background="@drawable/button_outline"
+            android:textColor="@color/text_white"
+            android:minHeight="48dp" />
+
+        <Button
+            android:id="@+id/btn_filter_cancelled"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="2dp"
+            android:text="Cancelled"
+            android:padding="4dp"
+            android:textSize="12sp"
+            android:background="@drawable/button_outline"
+            android:textColor="@color/text_white"
+            android:minHeight="48dp" />
+
+    </LinearLayout>
+
+    <!-- Bookings List -->
+
+    <!-- Empty State Message -->
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_bookings"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp"
+        android:paddingTop="0dp" />
+
+    <TextView
+        android:id="@+id/tv_empty_message"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="No bookings found"
+        android:textSize="16sp"
+        android:textColor="@color/text_secondary"
+        android:gravity="center"
+        android:visibility="gone" />
+
+</LinearLayout>

@@ -274,4 +274,35 @@ public class Booking {
     public boolean isPaid() {
         return "PAID".equals(paymentStatus);
     }
+
+    /**
+     * Checks if booking can be cancelled within 24 hours of creation
+     * @return true if booking is within 24 hours and can be cancelled
+     */
+    public boolean canBeCancelledWithin24Hours() {
+        long currentTime = System.currentTimeMillis();
+        long twentyFourHoursInMillis = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+        long timeSinceBooking = currentTime - this.bookingDate;
+
+        // Can be cancelled if it's within 24 hours and status is CONFIRMED or PENDING
+        return timeSinceBooking <= twentyFourHoursInMillis &&
+               ("CONFIRMED".equals(bookingStatus) || "PENDING".equals(bookingStatus));
+    }
+
+    /**
+     * Gets the remaining time in hours for cancellation eligibility
+     * @return remaining hours for cancellation, 0 if expired
+     */
+    public long getRemainingCancellationHours() {
+        long currentTime = System.currentTimeMillis();
+        long twentyFourHoursInMillis = 24 * 60 * 60 * 1000;
+        long timeSinceBooking = currentTime - this.bookingDate;
+        long remainingTime = twentyFourHoursInMillis - timeSinceBooking;
+
+        if (remainingTime <= 0) {
+            return 0;
+        }
+
+        return remainingTime / (60 * 60 * 1000); // Convert to hours
+    }
 }

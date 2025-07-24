@@ -500,8 +500,8 @@ public class BookTourActivity extends AppCompatActivity {
                 // Set additional booking details
                 booking.setNotes(etNotes.getText().toString().trim());
                 booking.setQrCode(createPaymentQRCodeContent());
-                booking.setBookingStatus("CONFIRMED");
-                booking.setPaymentStatus("PAID"); // Assuming payment via QR code
+                booking.setBookingStatus("PENDING"); // Changed from CONFIRMED to PENDING
+                booking.setPaymentStatus("PENDING"); // Changed from PAID to PENDING - wait for admin confirmation
 
                 // Insert booking into database
                 long bookingId = database.bookingDao().insertBooking(booking);

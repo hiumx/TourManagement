@@ -210,6 +210,45 @@
 
     </LinearLayout>
 
+    <!-- Booking Management Menu Item (Admin Only) -->
+    <LinearLayout
+        android:id="@+id/menu_booking_management"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_booking_management"
+            android:layout_marginEnd="16dp"
+            android:tint="@color/warning_color" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Booking Management"
+            android:textSize="16sp"
+            android:textColor="@color/text_primary" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ADMIN"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="@color/error_color"
+            android:background="@drawable/admin_badge_background"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp" />
+
+    </LinearLayout>
+
     <!-- Logout Menu Item -->
     <LinearLayout
         android:id="@+id/menu_logout"

@@ -224,11 +224,38 @@ public class BookingHistoryActivity extends AppCompatActivity implements Booking
      */
     @Override
     public void onCancelBooking(Booking booking) {
+        // Updated logic to support 24-hour cancellation for confirmed bookings
         if ("PENDING".equals(booking.getBookingStatus())) {
-            cancelBooking(booking);
+            showCancellationConfirmationDialog(booking, "Are you sure you want to cancel this pending booking?");
+        } else if ("CONFIRMED".equals(booking.getBookingStatus()) && booking.canBeCancelledWithin24Hours()) {
+            long remainingHours = booking.getRemainingCancellationHours();
+            String message = "You can cancel this confirmed booking within 24 hours of booking.\n\n" +
+                           "Time remaining: " + remainingHours + " hours\n\n" +
+                           "Are you sure you want to cancel this booking?";
+            showCancellationConfirmationDialog(booking, message);
         } else {
-            showToast("Only pending bookings can be cancelled");
+            showToast("This booking cannot be cancelled. Cancellation is only allowed within 24 hours of booking.");
         }
+    }
+
+    /**
+     * Shows confirmation dialog before cancelling a booking
+     *
+     * @param booking Booking to cancel
+     * @param message Confirmation message to display
+     */
+    private void showCancellationConfirmationDialog(Booking booking, String message) {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setTitle("Cancel Booking")
+               .setMessage(message)
+               .setPositiveButton("Yes, Cancel", (dialog, which) -> {
+                   cancelBooking(booking);
+               })
+               .setNegativeButton("No", (dialog, which) -> {
+                   dialog.dismiss();
+               })
+               .setCancelable(true)
+               .show();
     }
 
     /**
@@ -238,20 +265,69 @@ public class BookingHistoryActivity extends AppCompatActivity implements Booking
      */
     private void cancelBooking(Booking booking) {
         try {
+            String originalStatus = booking.getBookingStatus();
+
             // Update booking status
             booking.setBookingStatus("CANCELLED");
+
+            // If the booking was paid, set payment status to refunded
+            if ("PAID".equals(booking.getPaymentStatus())) {
+                booking.setPaymentStatus("REFUNDED");
+            }
+
             database.bookingDao().updateBooking(booking);
 
-            // Update tour booking count (decrease)
+            // Update tour booking count (decrease available spots)
             database.tourDao().updateBookingCount(booking.getTourId(), -booking.getNumberOfPeople());
 
-            showToast("Booking cancelled successfully");
+            // Get user and tour information for email
+            com.example.tourmanagement.model.User user = database.userDao().getUserById(currentUserId);
+            com.example.tourmanagement.model.Tour tour = database.tourDao().getTourById(booking.getTourId());
+
+            // Send cancellation confirmation email
+            if (user != null && tour != null && user.getEmail() != null && !user.getEmail().isEmpty()) {
+                com.example.tourmanagement.utils.EmailService.sendBookingCancellationEmail(
+                    user, tour, booking, new com.example.tourmanagement.utils.EmailService.EmailCallback() {
+                        @Override
+                        public void onSuccess() {
+                            android.util.Log.d("BookingHistoryActivity", "Cancellation email sent successfully");
+                            runOnUiThread(() -> {
+                                if ("CONFIRMED".equals(originalStatus)) {
+                                    showToast("Confirmed booking cancelled successfully. Cancellation email sent. Refund will be processed if payment was made.");
+                                } else {
+                                    showToast("Booking cancelled successfully. Cancellation email sent.");
+                                }
+                            });
+                        }
+
+                        @Override
+                        public void onFailure(String error) {
+                            android.util.Log.e("BookingHistoryActivity", "Failed to send cancellation email: " + error);
+                            runOnUiThread(() -> {
+                                if ("CONFIRMED".equals(originalStatus)) {
+                                    showToast("Confirmed booking cancelled successfully. Refund will be processed if payment was made. (Email notification failed)");
+                                } else {
+                                    showToast("Booking cancelled successfully. (Email notification failed)");
+                                }
+                            });
+                        }
+                    }
+                );
+            } else {
+                // Show appropriate success message without email
+                if ("CONFIRMED".equals(originalStatus)) {
+                    showToast("Confirmed booking cancelled successfully. Refund will be processed if payment was made.");
+                } else {
+                    showToast("Booking cancelled successfully");
+                }
+            }
 
             // Refresh booking history
             loadBookingHistory();
             loadBookingStatistics();
 
         } catch (Exception e) {
+            android.util.Log.e("BookingHistoryActivity", "Error cancelling booking", e);
             showToast("Error cancelling booking: " + e.getMessage());
         }
     }

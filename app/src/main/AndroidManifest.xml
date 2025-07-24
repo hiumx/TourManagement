@@ -108,6 +108,12 @@
             android:exported="false"
             android:parentActivityName=".activity.DashboardActivity" />
 
+        <!-- Booking Management Activity (Admin only) -->
+        <activity
+            android:name=".activity.BookingManagementActivity"
+            android:exported="false"
+            android:parentActivityName=".activity.DashboardActivity" />
+
         <!-- Add Edit User Activity (Admin only) -->
         <activity
             android:name=".activity.AddEditUserActivity"

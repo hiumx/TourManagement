@@ -276,4 +276,42 @@ public interface BookingDao {
            "GROUP BY strftime('%Y-%m', datetime(bookingDate/1000, 'unixepoch')) " +
            "ORDER BY bookingDate ASC")
     List<Double> getMonthlyRevenueData(long startDate);
+
+    /**
+     * Gets count of bookings by status for admin dashboard statistics
+     * Used for showing booking status distribution
+     *
+     * @param status Booking status to count
+     * @return Number of bookings with the specified status
+     */
+    @Query("SELECT COUNT(*) FROM bookings WHERE bookingStatus = :status")
+    int getBookingCountByStatus(String status);
+
+    /**
+     * Gets all pending bookings for admin approval
+     * Used in admin booking management interface
+     *
+     * @return List of pending bookings ordered by booking date
+     */
+    @Query("SELECT * FROM bookings WHERE bookingStatus = 'PENDING' ORDER BY bookingDate ASC")
+    List<Booking> getPendingBookingsForApproval();
+
+    /**
+     * Gets recent bookings for admin dashboard
+     * Used to show latest booking activity
+     *
+     * @param limit Number of recent bookings to retrieve
+     * @return List of recent bookings
+     */
+    @Query("SELECT * FROM bookings ORDER BY bookingDate DESC LIMIT :limit")
+    List<Booking> getRecentBookings(int limit);
+
+    /**
+     * Gets bookings that need admin attention (pending status)
+     * Used for admin notification system
+     *
+     * @return Count of bookings requiring admin action
+     */
+    @Query("SELECT COUNT(*) FROM bookings WHERE bookingStatus = 'PENDING'")
+    int getBookingsRequiringAttentionCount();
 }
